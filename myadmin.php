@@ -15,10 +15,10 @@ return [
 	'version' => '1.0.0',
 	'type' => 'licenses',
 	'hooks' => [
-		'function.requirements' => ['Detain\MyAdminKvm\Plugin', 'Requirements'],
+		/*'function.requirements' => ['Detain\MyAdminKvm\Plugin', 'Requirements'],
 		'licenses.settings' => ['Detain\MyAdminKvm\Plugin', 'Settings'],
 		'licenses.activate' => ['Detain\MyAdminKvm\Plugin', 'Activate'],
 		'licenses.change_ip' => ['Detain\MyAdminKvm\Plugin', 'ChangeIp'],
-		'ui.menu' => ['Detain\MyAdminKvm\Plugin', 'Menu']
+		'ui.menu' => ['Detain\MyAdminKvm\Plugin', 'Menu'] */
 	],
 ];
