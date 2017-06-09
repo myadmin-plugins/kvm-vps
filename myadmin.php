@@ -15,8 +15,8 @@ return [
 	'version' => '1.0.0',
 	'type' => 'service',
 	'hooks' => [
-		/*'function.requirements' => ['Detain\MyAdminKvm\Plugin', 'Requirements'],
 		'vps.settings' => ['Detain\MyAdminKvm\Plugin', 'Settings'],
+		/*'function.requirements' => ['Detain\MyAdminKvm\Plugin', 'Requirements'],
 		'vps.activate' => ['Detain\MyAdminKvm\Plugin', 'Activate'],
 		'vps.change_ip' => ['Detain\MyAdminKvm\Plugin', 'ChangeIp'],
 		'ui.menu' => ['Detain\MyAdminKvm\Plugin', 'Menu'] */
