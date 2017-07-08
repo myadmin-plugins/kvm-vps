@@ -7,9 +7,9 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Plugin {
 
-	public static $name = 'Kvm Vps';
-	public static $description = 'Allows selling of Kvm Server and VPS License Types.  More info at https://www.netenberg.com/kvm.php';
-	public static $help = 'It provides more than one million end users the ability to quickly install dozens of the leading open source content management systems into their web space.  	Must have a pre-existing cPanel license with cPanelDirect to purchase a kvm license. Allow 10 minutes for activation.';
+	public static $name = 'KVM VPS';
+	public static $description = 'Allows selling of KVM VPS Types.  KVM (for Kernel-based Virtual Machine) is a full virtualization solution for Linux on x86 hardware containing virtualization extensions (Intel VT or AMD-V). It consists of a loadable kernel module, kvm.ko, that provides the core virtualization infrastructure and a processor specific module, kvm-intel.ko or kvm-amd.ko.  Using KVM, one can run multiple virtual machines running unmodified Linux or Windows images. Each virtual machine has private virtualized hardware: a network card, disk, graphics adapter, etc.  More info at https://www.linux-kvm.org/';
+	public static $help = '';
 	public static $module = 'vps';
 	public static $type = 'service';
 
@@ -20,21 +20,30 @@ class Plugin {
 	public static function getHooks() {
 		return [
 			self::$module.'.settings' => [__CLASS__, 'getSettings'],
+			self::$module.'.deactivate' => [__CLASS__, 'getDeactivate'],
 		];
 	}
 
 	public static function getActivate(GenericEvent $event) {
 		$serviceClass = $event->getSubject();
-		if ($event['category'] == SERVICE_TYPES_FANTASTICO) {
-			myadmin_log(self::$module, 'info', 'Kvm Activation', __LINE__, __FILE__);
+		if ($event['category'] == SERVICE_TYPES_KVM_LINUX || $event['category'] == SERVICE_TYPES_KVM_WINDOWS || $event['category'] == SERVICE_TYPES_CLOUD_KVM_LINUX || $event['category'] == SERVICE_TYPES_CLOUD_KVM_WINDOWS) {
+			myadmin_log(self::$module, 'info', self::$name.' Activation', __LINE__, __FILE__);
 			function_requirements('activate_kvm');
 			activate_kvm($serviceClass->getIp(), $event['field1']);
 			$event->stopPropagation();
 		}
 	}
 
+	public static function getDeactivate(GenericEvent $event) {
+		if ($event['category'] == SERVICE_TYPES_KVM_LINUX || $event['category'] == SERVICE_TYPES_KVM_WINDOWS || $event['category'] == SERVICE_TYPES_CLOUD_KVM_LINUX || $event['category'] == SERVICE_TYPES_CLOUD_KVM_WINDOWS) {
+			myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
+		}
+	}
+
 	public static function getChangeIp(GenericEvent $event) {
-		if ($event['category'] == SERVICE_TYPES_FANTASTICO) {
+		if ($event['category'] == SERVICE_TYPES_KVM_LINUX || $event['category'] == SERVICE_TYPES_KVM_WINDOWS || $event['category'] == SERVICE_TYPES_CLOUD_KVM_LINUX || $event['category'] == SERVICE_TYPES_CLOUD_KVM_WINDOWS) {
 			$serviceClass = $event->getSubject();
 			$settings = get_module_settings(self::$module);
 			$kvm = new Kvm(FANTASTICO_USERNAME, FANTASTICO_PASSWORD);
