@@ -27,14 +27,14 @@ class Plugin {
 
 	public static function getActivate(GenericEvent $event) {
 		$serviceClass = $event->getSubject();
-		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, SERVICE_TYPES_KVM_WINDOWS, SERVICE_TYPES_CLOUD_KVM_LINUX, SERVICE_TYPES_CLOUD_KVM_WINDOWS])) {
+		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
 			myadmin_log(self::$module, 'info', self::$name.' Activation', __LINE__, __FILE__);
 			$event->stopPropagation();
 		}
 	}
 
 	public static function getDeactivate(GenericEvent $event) {
-		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, SERVICE_TYPES_KVM_WINDOWS, SERVICE_TYPES_CLOUD_KVM_LINUX, SERVICE_TYPES_CLOUD_KVM_WINDOWS])) {
+		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
 			myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__);
 			$serviceClass = $event->getSubject();
 			$GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
@@ -42,7 +42,7 @@ class Plugin {
 	}
 
 	public static function getChangeIp(GenericEvent $event) {
-		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, SERVICE_TYPES_KVM_WINDOWS, SERVICE_TYPES_CLOUD_KVM_LINUX, SERVICE_TYPES_CLOUD_KVM_WINDOWS])) {
+		if (in_array($event['type'], [SERVICE_TYPES_KVM_LINUX, get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
 			$serviceClass = $event->getSubject();
 			$settings = get_module_settings(self::$module);
 			$kvm = new Kvm(FANTASTICO_USERNAME, FANTASTICO_PASSWORD);
