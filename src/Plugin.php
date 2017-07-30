@@ -87,8 +87,8 @@ class Plugin {
 	public static function getMenu(GenericEvent $event) {
 		$menu = $event->getSubject();
 		if ($GLOBALS['tf']->ima == 'admin') {
-			$menu->add_link(self::$module, 'choice=none.reusable_kvm', 'icons/database_warning_48.png', 'ReUsable Kvm Licenses');
-			$menu->add_link(self::$module, 'choice=none.kvm_list', 'icons/database_warning_48.png', 'Kvm Licenses Breakdown');
+			$menu->add_link(self::$module, 'choice=none.reusable_kvm', 'images/icons/database_warning_48.png', 'ReUsable Kvm Licenses');
+			$menu->add_link(self::$module, 'choice=none.kvm_list', 'images/icons/database_warning_48.png', 'Kvm Licenses Breakdown');
 			$menu->add_link(self::$module.'api', 'choice=none.kvm_licenses_list', 'whm/createacct.gif', 'List all Kvm Licenses');
 		}
 	}
