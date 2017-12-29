@@ -2,7 +2,6 @@
 
 namespace Detain\MyAdminKvm;
 
-use Detain\Kvm\Kvm;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -31,7 +30,8 @@ class Plugin {
 		return [
 			self::$module.'.settings' => [__CLASS__, 'getSettings'],
 			//self::$module.'.activate' => [__CLASS__, 'getActivate'],
-			self::$module.'.deactivate' => [__CLASS__, 'getDeactivate']
+			self::$module.'.deactivate' => [__CLASS__, 'getDeactivate'],
+			self::$module.'.queue_backup' => [__CLASS__, 'getQueueBackup'],
 		];
 	}
 
@@ -136,6 +136,27 @@ class Plugin {
 		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_linux_ny', 'Out Of Stock KVM Linux Equinix NY4', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_LINUX_NY'), ['0', '1'], ['No', 'Yes']);
 		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_win_ny', 'Out Of Stock KVM Windows Equinix NY4', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_WIN_NY'), ['0', '1'], ['No', 'Yes']);
 		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_cloudkvm', 'Out Of Stock Cloud KVM', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_CLOUDKVM'), ['0', '1'], ['No', 'Yes']);
+	}
+
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueBackup(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Backup', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param' => $event['param']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/backup.sh.tpl');
+			$event->stopPropagation();
+		}
 	}
 
 }
