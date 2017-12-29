@@ -32,6 +32,21 @@ class Plugin {
 			//self::$module.'.activate' => [__CLASS__, 'getActivate'],
 			self::$module.'.deactivate' => [__CLASS__, 'getDeactivate'],
 			self::$module.'.queue_backup' => [__CLASS__, 'getQueueBackup'],
+			self::$module.'.queue_restore' => [__CLASS__, 'getQueueRestore'],
+			self::$module.'.queue_enable' => [__CLASS__, 'getQueueEnable'],
+			self::$module.'.queue_destroy' => [__CLASS__, 'getQueueDestroy'],
+			self::$module.'.queue_delete' => [__CLASS__, 'getQueueDelete'],
+			self::$module.'.queue_reinstall_os' => [__CLASS__, 'getQueueReinstallOs'],
+			self::$module.'.queue_update_hdsize' => [__CLASS__, 'getQueueUpdateHdsize'],
+			self::$module.'.queue_enable_cd' => [__CLASS__, 'getQueueEnableCd'],
+			self::$module.'.queue_disable_cd' => [__CLASS__, 'getQueueDisableCd'],
+			self::$module.'.queue_insert_cd' => [__CLASS__, 'getQueueInsertCd'],
+			self::$module.'.queue_eject_cd' => [__CLASS__, 'getQueueEjectCd'],
+			self::$module.'.queue_start' => [__CLASS__, 'getQueueStart'],
+			self::$module.'.queue_stop' => [__CLASS__, 'getQueueStop'],
+			self::$module.'.queue_restart' => [__CLASS__, 'getQueueRestart'],
+			self::$module.'.queue_setup_vnc' => [__CLASS__, 'getQueueSetupVnc'],
+			self::$module.'.queue_reset_password' => [__CLASS__, 'getQueueResetPassword'],
 		];
 	}
 
@@ -138,7 +153,6 @@ class Plugin {
 		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_cloudkvm', 'Out Of Stock Cloud KVM', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_CLOUDKVM'), ['0', '1'], ['No', 'Yes']);
 	}
 
-
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
@@ -152,9 +166,29 @@ class Plugin {
 				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
 				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
 				'domain' => DOMAIN,
-				'param' => $event['param']
+				'param1' => $event['param1']
 			]);
 			echo $smarty->fetch(__DIR__.'/../templates/backup.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueRestore(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Restore', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/restore.sh.tpl');
 			$event->stopPropagation();
 		}
 	}
