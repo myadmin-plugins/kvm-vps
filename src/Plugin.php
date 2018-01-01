@@ -193,4 +193,264 @@ class Plugin {
 		}
 	}
 
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueEnable(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Enable', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/enable.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueDestroy(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Destroy', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/destroy.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueDelete(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Delete', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/delete.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueReinstallOsupdateHdsize(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Reinstall Osupdate Hdsize', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/reinstall_osupdate_hdsize.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueEnableCd(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Enable Cd', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/enable_cd.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueDisableCd(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Disable Cd', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/disable_cd.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueInsertCd(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Insert Cd', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/insert_cd.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueEjectCd(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Eject Cd', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/eject_cd.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueStart(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Start', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/start.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueStop(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Stop', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/stop.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueRestart(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Restart', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/restart.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueSetupVnc(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Setup Vnc', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/setup_vnc.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
+	/**
+	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+	 */
+	public static function getQueueResetPassword(GenericEvent $event) {
+		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
+			myadmin_log(self::$module, 'info', self::$name.' Queue Reset Password', __LINE__, __FILE__);
+			$serviceClass = $event->getSubject();
+			$smarty = new \TFSmarty();
+			$smarty->assign([
+				'vps_id' => $serviceClass->getId(),
+				'vps_vzid' => is_numeric($serviceClass->getVzid()) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$serviceClass->getVzid() : 'linux'.$serviceClass->getVzid()) : $serviceClass->getVzid(),
+				'email' => $GLOBALS['tf']->accounts->cross_reference($serviceClass->getCustid()),
+				'domain' => DOMAIN,
+				'param1' => $event['param1']
+			]);
+			echo $smarty->fetch(__DIR__.'/../templates/reset_password.sh.tpl');
+			$event->stopPropagation();
+		}
+	}
+
 }
