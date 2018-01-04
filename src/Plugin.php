@@ -60,37 +60,6 @@ class Plugin {
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getMenu(GenericEvent $event) {
-		$menu = $event->getSubject();
-		if ($GLOBALS['tf']->ima == 'admin') {
-			$menu->add_link(self::$module, 'choice=none.reusable_kvm', 'images/icons/database_warning_48.png', 'ReUsable Kvm Licenses');
-			$menu->add_link(self::$module, 'choice=none.kvm_list', 'images/icons/database_warning_48.png', 'Kvm Licenses Breakdown');
-			$menu->add_link(self::$module.'api', 'choice=none.kvm_licenses_list', '/images/whm/createacct.gif', 'List all Kvm Licenses');
-		}
-	}
-
-	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
-	public static function getRequirements(GenericEvent $event) {
-		$loader = $event->getSubject();
-		$loader->add_page_requirement('crud_kvm_list', '/../vendor/detain/crud/src/crud/crud_kvm_list.php');
-		$loader->add_page_requirement('crud_reusable_kvm', '/../vendor/detain/crud/src/crud/crud_reusable_kvm.php');
-		$loader->add_requirement('get_kvm_licenses', '/../vendor/detain/myadmin-kvm-vps/src/kvm.inc.php');
-		$loader->add_requirement('get_kvm_list', '/../vendor/detain/myadmin-kvm-vps/src/kvm.inc.php');
-		$loader->add_page_requirement('kvm_licenses_list', '/../vendor/detain/myadmin-kvm-vps/src/kvm_licenses_list.php');
-		$loader->add_page_requirement('kvm_list', '/../vendor/detain/myadmin-kvm-vps/src/kvm_list.php');
-		$loader->add_requirement('get_available_kvm', '/../vendor/detain/myadmin-kvm-vps/src/kvm.inc.php');
-		$loader->add_requirement('activate_kvm', '/../vendor/detain/myadmin-kvm-vps/src/kvm.inc.php');
-		$loader->add_requirement('get_reusable_kvm', '/../vendor/detain/myadmin-kvm-vps/src/kvm.inc.php');
-		$loader->add_page_requirement('reusable_kvm', '/../vendor/detain/myadmin-kvm-vps/src/reusable_kvm.php');
-		$loader->add_requirement('class.Kvm', '/../vendor/detain/kvm-vps/src/Kvm.php');
-		$loader->add_page_requirement('vps_add_kvm', '/vps/addons/vps_add_kvm.php');
-	}
-
-	/**
-	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
-	 */
 	public static function getSettings(GenericEvent $event) {
 		$settings = $event->getSubject();
 		$settings->add_text_setting(self::$module, 'Slice Costs', 'vps_slice_kvm_l_cost', 'KVM Linux VPS Cost Per Slice:', 'KVM Linux VPS will cost this much for 1 slice.', $settings->get_setting('VPS_SLICE_KVM_L_COST'));
