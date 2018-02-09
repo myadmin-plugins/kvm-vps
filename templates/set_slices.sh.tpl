@@ -1,5 +1,5 @@
 {assign var=memory value=1000 * $settings['vps_slice_ram'] * $vps_slices}
-{assign var=diskspace value={1010 * (($settings['slice_hd'] * $vps_slices) + $settings['additional_hd'])}
+{assign var=diskspace value=1010 * (($settings['slice_hd'] * $vps_slices) + $settings['additional_hd'])}
 {if in_array($vps_custid, [2773,8,2304])}
 {assign var=vcpu value=ceil($vps_slices / 2)}
 {else}
@@ -22,7 +22,7 @@ if [ ! -d /cgroup/blkio/libvirt/qemu ]; then
   echo No CGroups Enabled;
 else 
   virsh schedinfo {$vps_vzid} --set cpu_shares={$cpushares} --current;
-  virsh schedinfo {$vps_vzid} --set cpu_shares={$cpushares} --config;
   virsh blkiotune {$vps_vzid} --weight {$ioweight} --current;
   virsh blkiotune {$vps_vzid} --weight {$ioweight} --config;
+  virsh schedinfo {$vps_vzid} --set cpu_shares={$cpushares} --config;
 fi;
