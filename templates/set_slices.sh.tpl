@@ -13,7 +13,7 @@ cd /etc/libvirt/qemu/;
 /bin/cp -f /etc/libvirt/qemu/{$vps_vzid}.xml /etc/libvirt/qemu/{$vps_vzid}.xml.backup;
 /usr/bin/virsh managedsave-remove {$vps_vzid};
 /usr/bin/virsh undefine {$vps_vzid};
-cat /etc/libvirt/qemu/{$vps_vzid}.xml.backup|sed -e s#"<currentMemory.*"#"<currentMemory>{$memory}</currentMemory>"#g -e sed s#"<memory.*"#"<memory>{$memory}</memory>"#g -e s#"<vcpu.*"#"<vcpu>{$vcpu}</vcpu>"#g > /etc/libvirt/qemu/{$vps_vzid}.xml;
+cat /etc/libvirt/qemu/{$vps_vzid}.xml.backup|sed -e s#"<currentMemory.*"#"<currentMemory>{$memory}</currentMemory>"#g -e s#"<memory.*"#"<memory>{$memory}</memory>"#g -e s#"<vcpu.*"#"<vcpu>{$vcpu}</vcpu>"#g > /etc/libvirt/qemu/{$vps_vzid}.xml;
 /usr/bin/virsh define {$vps_vzid}.xml;
 /root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} {$diskspace};
 /usr/bin/virsh start {$vps_vzid};
