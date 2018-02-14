@@ -1,12 +1,16 @@
-{assign var=memory value=1000 * $settings['vps_slice_ram'] * $vps_slices}
-{assign var=diskspace value=1010 * (($settings['slice_hd'] * $vps_slices) + $settings['additional_hd'])}
+{assign var=memory value=1000 * $settings['vps_slice_ram']}
+{assign var=memory value=$memory * $vps_slices}
+{assign var=diskspace value=$settings['slice_hd'] * $vps_slices}
+{assign var=diskspace value=$diskspace + $settings['additional_hd']}
+{assign var=diskspace value=$diskspace * 1010}
 {if in_array($vps_custid, [2773,8,2304])}
 {assign var=vcpu value=ceil($vps_slices / 2)}
 {else}
 {assign var=vcpu value=ceil($vps_slices / 4)}
 {/if}
 {assign var=cpushares value=$vps_slices * 512}
-{assign var=ioweight value=400 + (37 * $vps_slices)}
+{assign var=ioweight value=37 * $vps_slices}
+{assign var=ioweight value=$ioweight + 400}
 set -x;
 /usr/bin/virsh destroy {$vps_vzid};
 cd /etc/libvirt/qemu/;
