@@ -1,4 +1,4 @@
-{assign var=memory value=1000 * $settings['vps_slice_ram']}
+{assign var=memory value=1000 * $settings['slice_ram']}
 {assign var=memory value=$memory * $vps_slices}
 {assign var=diskspace value=$settings['slice_hd'] * $vps_slices}
 {assign var=diskspace value=$diskspace + $settings['additional_hd']}
