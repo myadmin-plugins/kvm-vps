@@ -1,7 +1,7 @@
 virsh destroy {$vps_vzid};
 export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)"
 if [ "$pool" = "zfs" ]; then
-	virsh vol-resize {$vps_vzid} {$mb}M
+	virsh vol-resize {$vps_vzid} {$mb}M --pool zfs --shrink
 else
 	sh /root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} $mb;
 fi
