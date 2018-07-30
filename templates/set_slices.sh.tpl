@@ -11,7 +11,7 @@
 {assign var=cpushares value=$vps_slices * 512}
 {assign var=ioweight value=37 * $vps_slices}
 {assign var=ioweight value=$ioweight + 400}
-set -x;
+#set -x;
 /usr/bin/virsh destroy {$vps_vzid};
 cd /etc/libvirt/qemu/;
 /bin/cp -f /etc/libvirt/qemu/{$vps_vzid}.xml /etc/libvirt/qemu/{$vps_vzid}.xml.backup;
