@@ -21,7 +21,7 @@ cat /etc/libvirt/qemu/{$vps_vzid}.xml.backup|sed -e s#"<currentMemory.*"#"<curre
 /usr/bin/virsh define {$vps_vzid}.xml;
 export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)"
 if [ "$pool" = "zfs" ]; then
-	virsh vol-resize {$vps_vzid} {$diskspace}M --pool vz --shrink
+	zfs set volsize={$mb}M vz/{$vps_vzid}
 else
 	/root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} {$diskspace};
 fi
