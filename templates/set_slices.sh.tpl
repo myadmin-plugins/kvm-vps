@@ -25,7 +25,6 @@ if [ "$pool" = "zfs" ]; then
 else
 	/root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} {$diskspace};
 fi
-}
 /usr/bin/virsh start {$vps_vzid};
 bash /root/cpaneldirect/run_buildebtables.sh;
 if [ ! -d /cgroup/blkio/libvirt/qemu ]; then
