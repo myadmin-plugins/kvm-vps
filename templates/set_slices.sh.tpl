@@ -19,7 +19,13 @@ cd /etc/libvirt/qemu/;
 /usr/bin/virsh undefine {$vps_vzid};
 cat /etc/libvirt/qemu/{$vps_vzid}.xml.backup|sed -e s#"<currentMemory.*"#"<currentMemory>{$memory}</currentMemory>"#g -e s#"<memory.*"#"<memory>{$memory}</memory>"#g -e s#"<vcpu.*"#"<vcpu>{$vcpu}</vcpu>"#g > /etc/libvirt/qemu/{$vps_vzid}.xml;
 /usr/bin/virsh define {$vps_vzid}.xml;
-/root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} {$diskspace};
+export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)"
+if [ "$pool" = "zfs" ]; then
+	virsh vol-resize {$vps_vzid} {$diskspace}M
+else
+	/root/cpaneldirect/vps_kvm_lvmresize.sh {$vps_vzid} {$diskspace};
+fi
+}
 /usr/bin/virsh start {$vps_vzid};
 bash /root/cpaneldirect/run_buildebtables.sh;
 if [ ! -d /cgroup/blkio/libvirt/qemu ]; then
