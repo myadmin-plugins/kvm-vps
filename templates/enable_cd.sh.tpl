@@ -12,9 +12,9 @@ echo "	  <target dev='hdc' bus='ide'/>
 virsh attach-device {$prefix}{$vps_vzid} /tmp/cd{$vps_vzid}.xml --config
 virsh shutdown {$prefix}{$vps_vzid};
 max=30
-echo "Waiting up to {$max} Seconds for graceful shutdown";
+echo "Waiting up to $max Seconds for graceful shutdown";
 start="$(date +%s)";
-while [ $(($(date +%s) - $start)) -le {$max} ] && [ "$(virsh list |grep {$prefix}{$vps_vzid})" != "" ]; do
+while [ $(($(date +%s) - $start)) -le $max ] && [ "$(virsh list |grep {$prefix}{$vps_vzid})" != "" ]; do
 	sleep 5s;
 done;
 virsh destroy {$prefix}{$vps_vzid};
