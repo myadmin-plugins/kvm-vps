@@ -1,8 +1,8 @@
-{assign var=memory value=1000 * $settings['slice_ram']}
+{assign var=memory value=1024 * $settings['slice_ram']}
 {assign var=memory value=$memory * $vps_slices}
 {assign var=diskspace value=$settings['slice_hd'] * $vps_slices}
 {assign var=diskspace value=$diskspace + $settings['additional_hd']}
-{assign var=diskspace value=$diskspace * 1010}
+{assign var=diskspace value=$diskspace * 1024}
 {if in_array($vps_custid, [2773,8,2304])}
 {assign var=vcpu value=ceil($vps_slices / 2)}
 {else}
