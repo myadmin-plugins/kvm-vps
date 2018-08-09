@@ -9,4 +9,9 @@ virsh autostart --disable {$vps_vzid};
 virsh managedsave-remove {$vps_vzid};
 virsh undefine {$vps_vzid};
 kpartx -dv  /dev/vz/{$vps_vzid};
-virsh vol-delete --pool vz {$vps_vzid};
+export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)"
+if [ "$pool" = "zfs" ]; then
+  virsh vol-delete --pool vz {$vps_vzid};
+else
+  lvremove -f /dev/vz/{$vps_vzid};
+fi
