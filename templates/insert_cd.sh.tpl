@@ -1,7 +1,20 @@
 export PATH="$PATH:/usr/sbin:/sbin:/bin:/usr/bin:";
-disk="$(virsh qemu-monitor-command {$prefix}{$vps_vzid} --hmp --cmd "info block"|grep -e "not inserted" -e "/tmp/cd{$vps_vzid}.iso" | cut -d: -f1)";
-virsh change-media {$prefix}{$vps_vzid} sdb --eject --live;
-if [ {$url} != "" ]; then
-	wget -O /tmp/cd{$vps_vzid}.iso {$url};
-	virsh change-media {$prefix}{$vps_vzid} sdb /tmp/cd{$vps_vzid}.iso --update --live --config
-fi;
+proto="$(echo "{$url}"|cut -d: -f1|tr "[A-Z]" "[a-z]")"
+host="$(echo "{$url}"|cut -d/ -f3)"
+if [ "$(echo "$host"|grep :)" = "" ]; then
+	port="$(grep "^$proto\s" /etc/services |grep "/tcp\s"|cut -d/ -f1|awk "{ print \$2 }")"
+else
+	host="$(echo "$host"|cut -d: -f1)"
+	port="$(echo "$host"|cut -d: -f2)"
+fi
+path="/$(echo "{$url}"|cut -d/ -f4-)"
+echo "<disk type='network' device='cdrom'>
+  <driver name='qemu' type='raw'/>
+  <target dev='sdb' bus='scsi'/>
+  <readonly/>
+  <source protocol='$proto' name='$path'>
+	<host name='$host' port='$port'/>
+  </source>
+</disk>" > /root/disk.xml;
+virsh update-device {$prefix}{$vps_vzid} /root/disk.xml --live --config
+rm -f /root/disk.xml; 
