@@ -18,3 +18,4 @@ echo "<disk type='network' device='cdrom'>
 </disk>" > /root/disk.xml;
 virsh update-device {$prefix}{$vps_vzid} /root/disk.xml --live --config
 rm -f /root/disk.xml; 
+virsh reboot {$prefix}{$vps_vzid};
