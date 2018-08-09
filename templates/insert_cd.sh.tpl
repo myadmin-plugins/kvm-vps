@@ -1,13 +1,13 @@
 export PATH="$PATH:/usr/sbin:/sbin:/bin:/usr/bin:";
-proto="$(echo "{$url}"|cut -d: -f1|tr "[A-Z]" "[a-z]")"
-host="$(echo "{$url}"|cut -d/ -f3)"
+proto="$(echo "{$param}"|cut -d: -f1|tr "[A-Z]" "[a-z]")"
+host="$(echo "{$param}"|cut -d/ -f3)"
 if [ "$(echo "$host"|grep :)" = "" ]; then
 	port="$(grep "^$proto\s" /etc/services |grep "/tcp\s"|cut -d/ -f1|awk "{ print \$2 }")"
 else
 	host="$(echo "$host"|cut -d: -f1)"
 	port="$(echo "$host"|cut -d: -f2)"
 fi
-path="/$(echo "{$url}"|cut -d/ -f4-)"
+path="/$(echo "{$param}"|cut -d/ -f4-)"
 echo "<disk type='network' device='cdrom'>
   <driver name='qemu' type='raw'/>
   <target dev='sdb' bus='scsi'/>
