@@ -10,7 +10,7 @@ virsh managedsave-remove {$vps_vzid};
 virsh undefine {$vps_vzid};
 export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)"
 if [ "$pool" = "zfs" ]; then
-  device="$(virsh vol-list vz --details|grep " ${name}[/ ]"|awk '{ print $2 }')";
+  device="$(virsh vol-list vz --details|grep " {$vps_vzid}[/ ]"|awk '{ print $2 }')";
 else
   device="/dev/vz/{$vps_vzid}";
 fi
