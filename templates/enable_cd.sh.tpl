@@ -2,17 +2,12 @@ export PATH="$PATH:/usr/sbin:/sbin:/bin:/usr/bin:";
 if [ "$(virsh dumpxml {$prefix}{$vps_vzid}|grep "disk.*cdrom")" != "" ]; then
     echo "Skipping Setup, CD-ROM Drive already exists in VPS configuration";
 else
-    echo "    <disk type='file' device='cdrom'>
-	  <driver name='qemu' type='raw'/>" > /tmp/cd{$vps_vzid}.xml;
     if [ "{$url}" != "" ]; then
-        wget -O /tmp/cd{$vps_vzid}.iso "{$url}";
-        echo "	  <source file='/tmp/cd{$vps_vzid}.iso'/>" >> /tmp/cd{$vps_vzid}.xml;
+        virsh attach-disk windows153389 "{$url}" sdb --targetbus scsi --type cdrom --sourcetype file --config
+    else
+        virsh attach-disk windows153389 - sdb --targetbus scsi --type cdrom --sourcetype file --config
+        virsh change-media windows153389 sdb --eject --config
     fi;
-    echo "	  <target dev='sdb' bus='scsi'/>
-	  <readonly/>
-	  <address type='drive' controller='0' bus='1' target='0' unit='0'/>
-	</disk>" >> /tmp/cd{$vps_vzid}.xml;
-    virsh attach-device {$prefix}{$vps_vzid} /tmp/cd{$vps_vzid}.xml --config
     virsh shutdown {$prefix}{$vps_vzid};
     max=30
     echo "Waiting up to $max Seconds for graceful shutdown";
@@ -21,7 +16,7 @@ else
         sleep 5s;
     done;
     virsh destroy {$prefix}{$vps_vzid};
-   virsh start {$prefix}{$vps_vzid};
-   bash /root/cpaneldirect/run_buildebtables.sh;
-   /root/cpaneldirect/vps_refresh_vnc.sh {$prefix}{$vps_vzid};
+    virsh start {$prefix}{$vps_vzid};
+    bash /root/cpaneldirect/run_buildebtables.sh;
+    /root/cpaneldirect/vps_refresh_vnc.sh {$prefix}{$vps_vzid};
 fi;
