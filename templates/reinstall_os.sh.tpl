@@ -13,8 +13,8 @@ if [ "$pool" = "zfs" ]; then
   device="$(virsh vol-list vz --details|grep " {$vps_vzid}[/ ]"|awk '{ print $2 }')";
 else
   device="/dev/vz/{$vps_vzid}";
+  kpartx -dv $device;
 fi
-kpartx -dv $device;
 if [ "$pool" = "zfs" ]; then
   virsh vol-delete --pool vz {$vps_vzid}/os.qcow2 2>/dev/null;
   virsh vol-delete --pool vz {$vps_vzid} 2>/dev/null;
