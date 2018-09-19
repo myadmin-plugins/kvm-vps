@@ -8,4 +8,3 @@
 {assign var=vcpu value=ceil($vps_slices / 4)}
 {/if}
 /root/cpaneldirect/vps_kvm_create.sh {$vzid} {','|implode:$ips} '{$vps_os}' {$hd} {$ram} {$vcpu} {$rootpass} {$clientip|escapeshellarg} 2>&1;
-/root/cpaneldirect/vps_kvm_setup_vnc.sh {$vzid} {$clientip|escapeshellarg} 2>&1;
