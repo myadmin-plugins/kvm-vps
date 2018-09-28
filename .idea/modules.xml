@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/myadmin-kvm-vps.iml" filepath="$PROJECT_DIR$/.idea/myadmin-kvm-vps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/kvm-vps.iml" filepath="$PROJECT_DIR$/.idea/kvm-vps.iml" />
     </modules>
   </component>
 </project>

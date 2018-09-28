@@ -1,5 +1,5 @@
 {
-	"name": "detain/myadmin-kvm-vps",
+	"name": "detain/kvm-vps",
 	"type": "myadmin-plugin",
 	"description": "Kvm Vps Class",
 	"keywords": [
