@@ -19,6 +19,7 @@ if [ "$pool" = "zfs" ]; then
   virsh vol-delete --pool vz {$vps_vzid}/os.qcow2 2>/dev/null;
   virsh vol-delete --pool vz {$vps_vzid} 2>/dev/null;
   zfs destroy vz/{$vps_vzid};
+  zfs list -t snapshot|grep "/{$vps_vzid}@"|cut -d" " -f1|xargs -r -n 1 zfs destroy -v;
   if [ -e /vz/{$vps_vzid} ]; then
 	rmdir /vz/{$vps_vzid};
   fi;
