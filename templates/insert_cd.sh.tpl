@@ -16,7 +16,7 @@ echo "<disk type='network' device='cdrom'>
 	<host name='$host' port='$port'/>
   </source>
 </disk>" > /root/disk.xml;
-virsh update-device {$prefix}{$vps_vzid} /root/disk.xml --live
-virsh update-device {$prefix}{$vps_vzid} /root/disk.xml --config
+virsh update-device {$vps_vzid} /root/disk.xml --live
+virsh update-device {$vps_vzid} /root/disk.xml --config
 rm -f /root/disk.xml; 
-virsh reboot {$prefix}{$vps_vzid};
+virsh reboot {$vps_vzid};
