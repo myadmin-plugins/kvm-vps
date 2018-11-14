@@ -64,28 +64,31 @@ class Plugin
 	/**
 	 * @param \Symfony\Component\EventDispatcher\GenericEvent $event
 	 */
-	public static function getSettings(GenericEvent $event)
-	{
-		$settings = $event->getSubject();
-		$settings->add_text_setting(self::$module, 'Slice Costs', 'vps_slice_kvm_l_cost', 'KVM Linux VPS Cost Per Slice:', 'KVM Linux VPS will cost this much for 1 slice.', $settings->get_setting('VPS_SLICE_KVM_L_COST'));
-		$settings->add_text_setting(self::$module, 'Slice Costs', 'vps_slice_kvm_w_cost', 'KVM Windows VPS Cost Per Slice:', 'KVM Windows VPS will cost this much for 1 slice.', $settings->get_setting('VPS_SLICE_KVM_W_COST'));
-		$settings->add_text_setting(self::$module, 'Slice Costs', 'vps_slice_cloud_kvm_l_cost', 'Cloud KVM Linux VPS Cost Per Slice:', 'Cloud KVM Linux VPS will cost this much for 1 slice.', $settings->get_setting('VPS_SLICE_CLOUD_KVM_L_COST'));
-		$settings->add_text_setting(self::$module, 'Slice Costs', 'vps_slice_cloud_kvm_w_cost', 'Cloud KVM Windows VPS Cost Per Slice:', 'Cloud KVM Windows VPS will cost this much for 1 slice.', $settings->get_setting('VPS_SLICE_CLOUD_KVM_W_COST'));
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_kvm_win_server', 'KVM Windows NJ Server', NEW_VPS_KVM_WIN_SERVER, 1, 1);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_kvm_linux_server', 'KVM Linux NJ Server', NEW_VPS_KVM_LINUX_SERVER, 2, 1);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_la_kvm_win_server', 'KVM LA Windows Server', NEW_VPS_LA_KVM_WIN_SERVER, 1, 2);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_la_kvm_linux_server', 'KVM LA Linux Server', NEW_VPS_LA_KVM_LINUX_SERVER, 2, 2);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_ny_kvm_win_server', 'KVM NY4 Windows Server', NEW_VPS_NY_KVM_WIN_SERVER, 1, 3);
-		//$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_ny_kvm_linux_server', 'KVM NY4 Linux Server', NEW_VPS_NY_KVM_LINUX_SERVER, 2, 3);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_cloud_kvm_win_server', 'Cloud KVM Windows Server', (defined('NEW_VPS_CLOUD_KVM_WIN_SERVER') ? NEW_VPS_CLOUD_KVM_WIN_SERVER : ''), 3);
-		$settings->add_select_master(self::$module, 'Default Servers', self::$module, 'new_vps_cloud_kvm_linux_server', 'Cloud KVM Linux Server', (defined('NEW_VPS_CLOUD_KVM_LINUX_SERVER') ? NEW_VPS_CLOUD_KVM_LINUX_SERVER : ''), 3);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_linux', 'Out Of Stock KVM Linux Secaucus', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_LINUX'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_win', 'Out Of Stock KVM Windows Secaucus', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_WIN'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_linux_la', 'Out Of Stock KVM Linux Los Angeles', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_LINUX_LA'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_win_la', 'Out Of Stock KVM Windows Los Angeles', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_WIN_LA'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_linux_ny', 'Out Of Stock KVM Linux Equinix NY4', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_LINUX_NY'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_kvm_win_ny', 'Out Of Stock KVM Windows Equinix NY4', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_KVM_WIN_NY'), ['0', '1'], ['No', 'Yes']);
-		$settings->add_dropdown_setting(self::$module, 'Out of Stock', 'outofstock_cloudkvm', 'Out Of Stock Cloud KVM', 'Enable/Disable Sales Of This Type', $settings->get_setting('OUTOFSTOCK_CLOUDKVM'), ['0', '1'], ['No', 'Yes']);
+    public static function getSettings(GenericEvent $event)
+    {
+        /**
+         * @var \MyAdmin\Settings $settings
+         **/
+        $settings = $event->getSubject();
+		$settings->add_text_setting(self::$module, __('Slice Costs'), 'vps_slice_kvm_l_cost', __('KVM Linux VPS Cost Per Slice'), __('KVM Linux VPS will cost this much for 1 slice.'), $settings->get_setting('VPS_SLICE_KVM_L_COST'));
+		$settings->add_text_setting(self::$module, __('Slice Costs'), 'vps_slice_kvm_w_cost', __('KVM Windows VPS Cost Per Slice'), __('KVM Windows VPS will cost this much for 1 slice.'), $settings->get_setting('VPS_SLICE_KVM_W_COST'));
+		$settings->add_text_setting(self::$module, __('Slice Costs'), 'vps_slice_cloud_kvm_l_cost', __('Cloud KVM Linux VPS Cost Per Slice'), __('Cloud KVM Linux VPS will cost this much for 1 slice.'), $settings->get_setting('VPS_SLICE_CLOUD_KVM_L_COST'));
+		$settings->add_text_setting(self::$module, __('Slice Costs'), 'vps_slice_cloud_kvm_w_cost', __('Cloud KVM Windows VPS Cost Per Slice'), __('Cloud KVM Windows VPS will cost this much for 1 slice.'), $settings->get_setting('VPS_SLICE_CLOUD_KVM_W_COST'));
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_kvm_win_server', __('KVM Windows NJ Server'), NEW_VPS_KVM_WIN_SERVER, 1, 1);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_kvm_linux_server', __('KVM Linux NJ Server'), NEW_VPS_KVM_LINUX_SERVER, 2, 1);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_la_kvm_win_server', __('KVM LA Windows Server'), NEW_VPS_LA_KVM_WIN_SERVER, 1, 2);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_la_kvm_linux_server', __('KVM LA Linux Server'), NEW_VPS_LA_KVM_LINUX_SERVER, 2, 2);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_ny_kvm_win_server', __('KVM NY4 Windows Server'), NEW_VPS_NY_KVM_WIN_SERVER, 1, 3);
+		//$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_ny_kvm_linux_server', __('KVM NY4 Linux Server'), NEW_VPS_NY_KVM_LINUX_SERVER, 2, 3);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_cloud_kvm_win_server', __('Cloud KVM Windows Server'), (defined('NEW_VPS_CLOUD_KVM_WIN_SERVER') ? NEW_VPS_CLOUD_KVM_WIN_SERVER : ''), 3);
+		$settings->add_select_master(__(self::$module), __('Default Servers'), self::$module, 'new_vps_cloud_kvm_linux_server', __('Cloud KVM Linux Server'), (defined('NEW_VPS_CLOUD_KVM_LINUX_SERVER') ? NEW_VPS_CLOUD_KVM_LINUX_SERVER : ''), 3);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_linux', __('Out Of Stock KVM Linux Secaucus'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_LINUX'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_win', __('Out Of Stock KVM Windows Secaucus'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_WIN'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_linux_la', __('Out Of Stock KVM Linux Los Angeles'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_LINUX_LA'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_win_la', __('Out Of Stock KVM Windows Los Angeles'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_WIN_LA'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_linux_ny', __('Out Of Stock KVM Linux Equinix NY4'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_LINUX_NY'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_kvm_win_ny', __('Out Of Stock KVM Windows Equinix NY4'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_KVM_WIN_NY'), ['0', '1'], ['No', 'Yes']);
+		$settings->add_dropdown_setting(self::$module, __('Out of Stock'), 'outofstock_cloudkvm', __('Out Of Stock Cloud KVM'), __('Enable/Disable Sales Of This Type'), $settings->get_setting('OUTOFSTOCK_CLOUDKVM'), ['0', '1'], ['No', 'Yes']);
 	}
 
 	/**
