@@ -10,6 +10,69 @@
 {/if}
 export PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/root/bin";
 function iprogress() { curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps2.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1; }
+function install_gz_image() {
+    source="$1";
+    device="$2";
+    echo "Copying $source Image"
+    tsize=$(stat -c%s "$source")
+    gzip -dc "/$source.img.gz"  | dd of=$device 2>&1 &
+    pid=$!
+    echo "Got DD PID $pid";
+    sleep 2s;
+    if [ "$(pidof gzip)" != "" ]; then
+        pid="$(pidof gzip)";
+        echo "Tried again, got gzip PID $pid";
+    fi;
+    if [ "$(echo "$pid" | grep " ")" != "" ]; then
+        pid=$(pgrep -f 'gzip -dc');
+        echo "Didn't like gzip pid (had a space?), going with gzip PID $pid";
+    fi;
+    tsize=$(stat -L /proc/$pid/fd/3 -c "%s");
+    echo "Got Total Size $tsize";
+    if [ -z $tsize ]; then
+        tsize=$(stat -c%s "/$source");
+        echo "Falling back to filesize check, got size $tsize";
+    fi;
+    while [ -d /proc/$pid ]; do
+        copied=$(awk '/pos:/ { print $2 }' /proc/$pid/fdinfo/3);
+        completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)";
+        iprogress $completed &
+        if [ "$(ls /sys/block/md*/md/sync_action 2>/dev/null)" != "" ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
+            export softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)";
+            for softfile in $softraid; do
+                echo idle > $softfile;
+            done;
+        fi;
+        echo "$completed%";
+        sleep 10s
+    done
+}
+function install_image() {
+    source="$1";
+    device="$2";
+    echo "Copying Image";
+    tsize=$(stat -c%s "$source");
+    dd "if=$source" "of=$device" >dd.progress 2>&1 &
+    pid=$!
+    while [ -d /proc/$pid ]; do
+        sleep 9s;
+        kill -SIGUSR1 $pid;
+        sleep 1s;
+        if [ -d /proc/$pid ]; then
+            copied=$(tail -n 1 dd.progress | cut -d" " -f1);
+            completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)";
+            iprogress $completed &
+            if [ "$(ls /sys/block/md*/md/sync_action 2>/dev/null)" != "" ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
+                export softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)";
+                for softfile in $softraid; do
+                    echo idle > $softfile;
+                done;
+            fi;
+            echo "$completed%";
+        fi;
+    done;
+    rm -f dd.progress;
+}
 IFS="
 "
 softraid=""
@@ -138,6 +201,19 @@ if [ -e /etc/lsb-release ]; then
     fi;
 fi;
 /usr/bin/virsh define {$vzid}.xml
+# /usr/bin/virsh setmaxmem {$vzid} $memory;
+# /usr/bin/virsh setmem {$vzid} $memory;
+# /usr/bin/virsh setvcpus {$vzid} $vcpu;
+mac="$(/usr/bin/virsh dumpxml {$vzid} |grep 'mac address' | cut -d\' -f2)";
+/bin/cp -f $DHCPVPS $DHCPVPS.backup;
+grep -v -e "host {$vzid} " -e "fixed-address $ip;" $DHCPVPS.backup > $DHCPVPS
+echo "host {$vzid} { hardware ethernet $mac; fixed-address $ip; }" >> $DHCPVPS
+rm -f $DHCPVPS.backup;
+if [ -e /etc/apt ]; then
+    systemctl restart isc-dhcp-server 2>/dev/null || service isc-dhcp-server restart 2>/dev/null || /etc/init.d/isc-dhcp-server restart 2>/dev/null
+else
+    systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
+fi
 iprogress 15 &
 if [ "$pool" = "zfs" ]; then
     if [ -e "/vz/templates/{$vps_os}.qcow2" ]; then
@@ -164,14 +240,6 @@ if [ "$pool" = "zfs" ]; then
         virt-customize -d {$vzid} --root-password password:{$rootpass} --hostname "{$vzid}"
         adjust_partitions=0
     fi
-    #if [ -e "/{$vps_os}.img.gz" ]; then
-    #    echo "Uncompressing {$vps_os}.img.gz Image"
-    #    gunzip "/{$vps_os}.img.gz"
-    #fi
-    #if [ -e "/{$vps_os}.img" ]; then
-    #    echo "Uploading {$vps_os} Image"
-    #    virsh vol-upload {$vzid} "/{$vps_os}.img" --pool vz
-    #fi;
 elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cut -c1-8)" = "https://" ] || [ "$(echo {$vps_os} | cut -c1-6)" = "ftp://" ]; then
     adjust_partitions=0
     echo "Downloading {$vps_os} Image"
@@ -180,141 +248,26 @@ elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cu
         echo "There must have been a problem, the image does not exist"
         error=$(($error + 1))
     else
-        echo "Copying {$vps_os} Image"
-        dd if=/image_storage/image.raw.img of=$device >dd.progress 2>&1 &
-        pid=$!
-        tsize=$(stat -c%s "/image_storage/image.raw.img")
-        while [ -d /proc/$pid ]; do
-        sleep 9s
-        kill -SIGUSR1 $pid;
-        sleep 1s
-        if [ -d /proc/$pid ]; then
-            copied=$(tail -n 1 dd.progress | cut -d" " -f1)
-            completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)"
-            iprogress $completed &
-            if [ -e /sys/block/md*/md/sync_action ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
-                softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)"
-                for softfile in $softraid; do
-                    echo idle > $softfile
-                done
-            fi
-        fi
-        echo "$completed%"
-        sleep 10s
-        done
+        install_image "/image_storage/image.raw.img" "$device"
         echo "Removing Downloaded Image"
         umount /image_storage
         virsh vol-delete --pool vz image_storage
         rmdir /image_storage
     fi
-elif [ -e "/vz/templates/{$vps_os}" ]; then
-    echo "Copying Image"
-    tsize=$(stat -c%s "/vz/templates/{$vps_os}")
-    dd if=/vz/templates/{$vps_os} of=$device >dd.progress 2>&1 &
-    pid=$!
-    while [ -d /proc/$pid ]; do
-        sleep 9s
-        kill -SIGUSR1 $pid;
-        sleep 1s
-        if [ -d /proc/$pid ]; then
-          copied=$(tail -n 1 dd.progress | cut -d" " -f1)
-          completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)"
-          iprogress $completed &
-          if [ "$(ls /sys/block/md*/md/sync_action 2>/dev/null)" != "" ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
-                softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)"
-                for softfile in $softraid; do
-                    echo idle > $softfile
-                done
-            fi
-          echo "$completed%"
-        fi
-    done
-    rm -f dd.progress
-elif [ -e "/{$vps_os}.img" ]; then
-    echo "Copying Image"
-    tsize=$(stat -c%s "/{$vps_os}.img")
-    dd if=/{$vps_os}.img of=$device >dd.progress 2>&1 &
-    pid=$!
-    while [ -d /proc/$pid ]; do
-        sleep 9s
-        kill -SIGUSR1 $pid;
-        sleep 1s
-        if [ -d /proc/$pid ]; then
-          copied=$(tail -n 1 dd.progress | cut -d" " -f1)
-          completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)"
-          iprogress $completed &
-          if [ "$(ls /sys/block/md*/md/sync_action 2>/dev/null)" != "" ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
-                softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)"
-                for softfile in $softraid; do
-                    echo idle > $softfile
-                done
-            fi
-          echo "$completed%"
-        fi
-    done
-    rm -f dd.progress
 elif [ -e "/{$vps_os}.img.gz" ]; then
-    echo "Copying {$vps_os} Image"
-    tsize=$(stat -c%s "/{$vps_os}.img.gz")
-    gzip -dc "/{$vps_os}.img.gz"  | dd of=$device 2>&1 &
-    pid=$!
-    echo "Got DD PID $pid";
-    sleep 2s;
-    if [ "$(pidof gzip)" != "" ]; then
-        pid="$(pidof gzip)";
-        echo "Tried again, got gzip PID $pid";
-    fi;
-    if [ "$(echo "$pid" | grep " ")" != "" ]; then
-        pid=$(pgrep -f 'gzip -dc');
-        echo "Didn't like gzip pid (had a space?), going with gzip PID $pid";
-    fi;
-    tsize=$(stat -L /proc/$pid/fd/3 -c "%s");
-    echo "Got Total Size $tsize";
-    if [ -z $tsize ]; then
-        tsize=$(stat -c%s "/{$vps_os}.img.gz");
-        echo "Falling back to filesize check, got size $tsize";
-    fi;
-    while [ -d /proc/$pid ]; do
-        copied=$(awk '/pos:/ { print $2 }' /proc/$pid/fdinfo/3);
-        completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)";
-        iprogress $completed &
-        if [ "$(ls /sys/block/md*/md/sync_action 2>/dev/null)" != "" ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
-            softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)";
-            for softfile in $softraid; do
-                echo idle > $softfile;
-            done;
-        fi;
-        echo "$completed%";
-        sleep 10s
-    done
-elif [ -e "/dev/vz/{$vps_os}" ]; then
-    echo "Suspending {$vps_os} For Copy"
-    /usr/bin/virsh suspend {$vps_os}
-    echo "Copying Image"
-    tsize=$(stat -c%s "/dev/vz/{$vps_os}")
-    dd if=/dev/vz/{$vps_os} of=$device >dd.progress 2>&1 &
-    pid=$!
-    while [ -d /proc/$pid ]; do
-        sleep 9s
-        kill -SIGUSR1 $pid;
-        sleep 1s
-        if [ -d /proc/$pid ]; then
-          copied=$(tail -n 1 dd.progress | cut -d" " -f1)
-          completed="$(echo "$copied/$tsize*100" |bc -l | cut -d\. -f1)"
-          iprogress $completed &
-          if [ -e /sys/block/md*/md/sync_action ] && [ "$(grep -v idle /sys/block/md*/md/sync_action 2>/dev/null)" != "" ]; then
-                softraid="$(grep -l -v idle /sys/block/md*/md/sync_action 2>/dev/null)"
-                for softfile in $softraid; do
-                    echo idle > $softfile
-                done
-            fi
-          echo "$completed%"
-        fi
-    done
-    rm -f dd.progress
+    install_gz_image "/{$vps_os}.img.gz" "$device"
 else
-    echo "Template Does Not Exist"
-    error=$(($error + 1))
+    found=0;
+    for source in "/vz/templates/{$vps_os}" "/{$vps_os}.img" "/dev/vz/{$vps_os}"; do
+        if [ $found -eq 0 ] && [ -e "$source" ]; then
+            found=1;
+            install_image "$source" "$device"
+        fi;
+    done;
+    if [ $found -eq 0 ]; then
+        echo "Template Does Not Exist"
+        error=$(($error + 1))
+    fi;
 fi
 touch /tmp/_securexinetd;
 if [ "$softraid" != "" ]; then
@@ -366,21 +319,8 @@ if [ $error -eq 0 ]; then
             echo "Skipping Resizing Last Partition FS is not 83. Space (Sect $sects P $p FS $fs PN $pn PT $pt Start $start"
         fi
     fi
-    # /usr/bin/virsh setmaxmem {$vzid} $memory;
-    # /usr/bin/virsh setmem {$vzid} $memory;
-    # /usr/bin/virsh setvcpus {$vzid} $vcpu;
     touch /tmp/_securexinetd;
     /usr/bin/virsh autostart {$vzid};
-    mac="$(/usr/bin/virsh dumpxml {$vzid} |grep 'mac address' | cut -d\' -f2)";
-    /bin/cp -f $DHCPVPS $DHCPVPS.backup;
-    grep -v -e "host {$vzid} " -e "fixed-address $ip;" $DHCPVPS.backup > $DHCPVPS
-    echo "host {$vzid} { hardware ethernet $mac; fixed-address $ip; }" >> $DHCPVPS
-    rm -f $DHCPVPS.backup;
-    if [ -e /etc/apt ]; then
-        systemctl restart isc-dhcp-server 2>/dev/null || service isc-dhcp-server restart 2>/dev/null || /etc/init.d/isc-dhcp-server restart 2>/dev/null
-    else
-        systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
-    fi
     iprogress starting &
     /usr/bin/virsh start {$vzid};
     if [ "$pool" != "zfs" ]; then
@@ -420,7 +360,7 @@ if [ $error -eq 0 ]; then
     {$base}/vps_kvm_screenshot.sh "$(($vnc - 5900))" "$url?action=screenshot&name={$vzid}";
     /admin/kvmenable blocksmtp {$vzid}
     if [ "{$module}" = "vps" ]; then
-        /admin/kvmenable ebflush
+        /admin/kvmenable ebflush;
         {$base}/buildebtablesrules | sh
     fi
     service xinetd restart
