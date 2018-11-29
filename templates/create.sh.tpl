@@ -15,7 +15,7 @@ function install_gz_image() {
     device="$2";
     echo "Copying $source Image"
     tsize=$(stat -c%s "$source")
-    gzip -dc "/$source.img.gz"  | dd of=$device 2>&1 &
+    gzip -dc "/$source"  | dd of=$device 2>&1 &
     pid=$!
     echo "Got DD PID $pid";
     sleep 2s;
