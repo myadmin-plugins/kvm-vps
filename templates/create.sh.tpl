@@ -232,7 +232,8 @@ if [ "$pool" = "zfs" ]; then
             qemu-img resize $device "$size"M;
             iprogress 70 &
             part=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|tail -n 1)
-            virt-resize --expand $part /vz/templates/{$vps_os}.qcow2 $device;
+            backuppart=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|head -n 1)
+            virt-resize --expand $part /vz/templates/{$vps_os}.qcow2 $device || virt-resize --expand $backuppart /vz/templates/{$vps_os}.qcow2 $device ;
             iprogress 90 &
         fi;
         virsh detach-disk {$vzid} vda --persistent;
