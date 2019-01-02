@@ -3,11 +3,7 @@
 {assign var=hd value=$settings.slice_hd * $vps_slices}
 {assign var=hd value=$hd + $settings.additional_hd}
 {assign var=hd value=$hd * 1024}
-{if in_array($vps_custid, [2773,8,2304])}
-{assign var=vcpu value=ceil($vps_slices / 2)}
-{else}
-{assign var=vcpu value=ceil($vps_slices / 4)}
-{/if}
+{assign var=vcpu value=$vps_slices}
 export PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/root/bin";
 function iprogress() { curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps2.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1; }
 function install_gz_image() {
