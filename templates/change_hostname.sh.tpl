@@ -2,9 +2,9 @@ export PATH="$PATH:/usr/sbin:/sbin:/bin:/usr/bin:";
 export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\([^']*\)'.*$"#"\1"#g)";
 virsh destroy {$vps_vzid};
 if [ "$pool" = "zfs" ]; then
-  zfs rename vz/${vps_vzid} vz/{$param|escapeshellarg};
+  zfs rename vz/{$vps_vzid} vz/{$param|escapeshellarg};
 else
-  lvrename /dev/vz/${vps_vzid} vz/{$param|escapeshellarg};
+  lvrename /dev/vz/{$vps_vzid} vz/{$param|escapeshellarg};
 fi;
 virsh domrename {$vps_vzid} {$param|escapeshellarg};
 virsh dumpxml {$param|escapeshellarg} > vps.xml;
@@ -19,6 +19,6 @@ if [ -e /etc/apt ]; then
 else
     systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
 fi;
-rm -vf /etc/xinetd.d/${vps_vzid} /etc/xinetd.d/${vps_vzid}-spice;
-virsh start ${vps_vzid}"#{$param|escapeshellarg};
+rm -vf /etc/xinetd.d/{$vps_vzid} /etc/xinetd.d/${vps_vzid}-spice;
+virsh start {$param|escapeshellarg};
 ./vps_refresh_vnc.sh {$param|escapeshellarg};
