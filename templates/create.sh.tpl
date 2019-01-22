@@ -139,7 +139,7 @@ if [ "$pool" = "zfs" ]; then
     zfs create vz/{$vzid}
     device=/vz/{$vzid}/os.qcow2
     cd /vz
-    while [ ! -e /vz/${vzid} ]; do
+    while [ ! -e /vz/{$vzid} ]; do
         sleep 1;
     done
     #virsh vol-create-as --pool vz --name {$vzid}/os.qcow2 --capacity "$size"M --format qcow2 --prealloc-metadata
