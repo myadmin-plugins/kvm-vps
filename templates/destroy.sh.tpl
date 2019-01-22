@@ -12,6 +12,7 @@ export pool="$(virsh pool-dumpxml vz 2>/dev/null|grep "<pool"|sed s#"^.*type='\(
 if [ "$pool" = "zfs" ]; then
   zfs list -t snapshot|grep "/{$vps_vzid}@"|cut -d" " -f1|xargs -r -n 1 zfs destroy -v
   virsh vol-delete --pool vz {$vps_vzid};
+  zfs destroy vz/{$vps_vzid};
 else
   kpartx -dv /dev/vz/{$vps_vzid};
   lvremove -f /dev/vz/{$vps_vzid};
