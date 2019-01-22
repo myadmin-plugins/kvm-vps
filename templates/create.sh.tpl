@@ -78,15 +78,15 @@ export PREPATH="";
 ip="{','|implode:$ips}"
 iprogress 1 &
 if [ "{$module}" = "quickservers" ]; then
-    url="https://myquickserver2.interserver.net/qs_queue.php"
-    size=all
-    memory=$(echo "$(grep "^MemTotal" /proc/meminfo|awk "{ print \$2 }") / 100 * 70"|bc)
-    vcpu="$(lscpu |grep ^CPU\(s\) | awk ' { print $2 }')"
+    export url="https://myquickserver2.interserver.net/qs_queue.php"
+    export size=all
+    export memory=$(echo "$(grep "^MemTotal" /proc/meminfo|awk "{ print \$2 }") / 100 * 70"|bc)
+    export vcpu="$(lscpu |grep ^CPU\(s\) | awk ' { print $2 }')"
 else
-    url="https://myvps2.interserver.net/vps_queue.php"
-    size={$hd}
-    memory={$ram}
-    vcpu={$vcpu}
+    export url="https://myvps2.interserver.net/vps_queue.php"
+    export size={$hd}
+    export memory={$ram}
+    export vcpu={$vcpu}
 fi
 if [ "$(kpartx 2>&1 |grep sync)" = "" ]; then
     kpartxopts=""
@@ -139,7 +139,9 @@ if [ "$pool" = "zfs" ]; then
     zfs create vz/{$vzid}
     device=/vz/{$vzid}/os.qcow2
     cd /vz
-    sleep 5s;
+    while [ ! -e /vz/${vzid} ]; do
+        sleep 1;
+    done
     #virsh vol-create-as --pool vz --name {$vzid}/os.qcow2 --capacity "$size"M --format qcow2 --prealloc-metadata
     #sleep 5s;
     #device="$(virsh vol-list vz --details|grep " {$vzid}[/ ]"|awk '{ print $2 }')"
