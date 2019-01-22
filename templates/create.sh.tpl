@@ -257,11 +257,15 @@ elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cu
         virsh vol-delete --pool vz image_storage
         rmdir /image_storage
     fi
-elif [ -e "/{$vps_os}.img.gz" ]; then
-    install_gz_image "/{$vps_os}.img.gz" "$device"
 else
     found=0;
-    for source in "/vz/templates/{$vps_os}" "/{$vps_os}.img" "/dev/vz/{$vps_os}"; do
+    for source in "/vz/templates/{$vps_os}.img.gz" "/templates/{$vps_os}.img.gz" "/{$vps_os}.img.gz"; do
+        if [ $found -eq 0 ] && [ -e "$source" ]; then
+            found=1;
+            install_gz_image "$source" "$device"
+        fi;
+    done;
+    for source in "/vz/templates/{$vps_os}" "/vz/templates/{$vps_os}.img" "/templates/{$vps_os}.img" "/{$vps_os}.img" "/dev/vz/{$vps_os}"; do
         if [ $found -eq 0 ] && [ -e "$source" ]; then
             found=1;
             install_image "$source" "$device"
