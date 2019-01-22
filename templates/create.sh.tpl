@@ -168,7 +168,7 @@ else
     fi;
 fi
 if [ "{$module}" = "quickservers" ]; then
-    sed -e s#"^.*<parameter name='IP.*$"#""#g -e  s#"^.*filterref.*$"#""#g -i $name.xml
+    sed -e s#"^.*<parameter name='IP.*$"#""#g -e  s#"^.*filterref.*$"#""#g -i {$vzid}.xml
 else
     repl="<parameter name='IP' value='$ip'/>";
     if [ "$extraips" != "" ]; then
@@ -176,7 +176,7 @@ else
             repl="$repl\n        <parameter name='IP' value='$i'/>";
         done
     fi
-    sed s#"<parameter name='IP' value.*/>"#"$repl"#g -i $name.xml;
+    sed s#"<parameter name='IP' value.*/>"#"$repl"#g -i {$vzid}.xml;
 fi
 
 id=$(echo {$vzid}|sed s#"^\(qs\|windows\|linux\|vps\)\([0-9]*\)$"#"\2"#g)
