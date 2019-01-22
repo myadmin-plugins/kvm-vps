@@ -23,10 +23,10 @@ function install_gz_image() {
         pid=$(pgrep -f 'gzip -dc');
         echo "Didn't like gzip pid (had a space?), going with gzip PID $pid";
     fi;
-    tsize=$(stat -L /proc/$pid/fd/3 -c "%s");
+    tsize="$(stat -L /proc/$pid/fd/3 -c "%s")";
     echo "Got Total Size $tsize";
     if [ -z $tsize ]; then
-        tsize=$(stat -c%s "/$source");
+        tsize="$(stat -c%s "/$source")";
         echo "Falling back to filesize check, got size $tsize";
     fi;
     while [ -d /proc/$pid ]; do
