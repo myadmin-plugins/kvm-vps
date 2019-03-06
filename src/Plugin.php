@@ -44,7 +44,7 @@ class Plugin
 	{
 		$serviceClass = $event->getSubject();
 		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS')])) {
-			myadmin_log(self::$module, 'info', self::$name.' Activation', __LINE__, __FILE__);
+			myadmin_log(self::$module, 'info', self::$name.' Activation', __LINE__, __FILE__, self::$module, $serviceClass->getId());
 			$event->stopPropagation();
 		}
 	}
