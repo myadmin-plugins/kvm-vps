@@ -10,7 +10,7 @@ fi
 path="/$(echo "{$param}"|cut -d/ -f4-)"
 echo "<disk type='network' device='cdrom'>
   <driver name='qemu' type='raw'/>
-  <target dev='sdb' bus='scsi'/>
+  <target dev='hda' bus='ide'/>
   <readonly/>
   <source protocol='$proto' name='$path'>
 	<host name='$host' port='$port'/>

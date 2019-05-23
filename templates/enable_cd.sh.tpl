@@ -3,10 +3,10 @@ if [ "$(virsh dumpxml {$vps_vzid}|grep "disk.*cdrom")" != "" ]; then
     echo "Skipping Setup, CD-ROM Drive already exists in VPS configuration";
 else
     if [ "{$url}" != "" ]; then
-        virsh attach-disk {$vps_vzid} "{$url}" sdb --targetbus scsi --type cdrom --sourcetype file --config
+        virsh attach-disk {$vps_vzid} "{$url}" hda --targetbus ide --type cdrom --sourcetype file --config
     else
-        virsh attach-disk {$vps_vzid} - sdb --targetbus scsi --type cdrom --sourcetype file --config
-        virsh change-media {$vps_vzid} sdb --eject --config
+        virsh attach-disk {$vps_vzid} - hda --targetbus ide --type cdrom --sourcetype file --config
+        virsh change-media {$vps_vzid} hda --eject --config
     fi;
     virsh shutdown {$vps_vzid};
     max=30

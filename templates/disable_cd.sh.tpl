@@ -2,7 +2,7 @@ export PATH="$PATH:/usr/sbin:/sbin:/bin:/usr/bin:";
 if [ "$(virsh dumpxml {$vps_vzid}|grep "disk.*cdrom")" = "" ]; then
     echo "Skipping Removal, No CD-ROM Drive exists in VPS configuration";
 else
-    virsh detach-disk {$vps_vzid} sdb --config
+    virsh detach-disk {$vps_vzid} hda --config
     virsh shutdown {$vps_vzid};
     max=30
     echo "Waiting up to $max Seconds for graceful shutdown";
