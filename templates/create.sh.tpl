@@ -242,6 +242,10 @@ if [ "$pool" = "zfs" ]; then
         fi;
         virsh detach-disk {$vzid} vda --persistent;
         virsh attach-disk {$vzid} /vz/{$vzid}/os.qcow2 vda --targetbus virtio --driver qemu --subdriver qcow2 --type disk --sourcetype file --persistent;
+        virsh dumpxml {$vzid} > vps.xml
+        sed s#"type='qcow2'/"#"type='qcow2' cache='writeback' discard='unmap'/"#g -i vps.xml
+        virsh define vps.xml
+        rm -f vps.xml
         virt-customize -d {$vzid} --root-password password:{$rootpass} --hostname "{$vzid}"
         adjust_partitions=0
     fi
