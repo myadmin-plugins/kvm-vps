@@ -21,7 +21,7 @@ if [ "$pool" = "zfs" ]; then
   zfs list -t snapshot|grep "/{$vps_vzid}@"|cut -d" " -f1|xargs -r -n 1 zfs destroy -v;
   zfs destroy vz/{$vps_vzid};
   if [ -e /vz/{$vps_vzid} ]; then
-	rmdir /vz/{$vps_vzid};
+    rmdir /vz/{$vps_vzid};
   fi;
 else
   lvremove -f $device;
