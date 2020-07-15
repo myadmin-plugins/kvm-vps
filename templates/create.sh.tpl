@@ -227,6 +227,9 @@ if [ "$pool" = "zfs" ]; then
         echo "Copy {$vps_os}.qcow2 Image"
         if [ "$size" = "all" ]; then
             size=$(echo "$(zfs list vz -o available -H -p)  / (1024 * 1024)"|bc)
+		if [ $size -gt 2000000 ]; then
+			size=2000000
+		fi;
         fi
         if [ "$(echo "{$vps_os}"|grep -i freebsd)" != "" ]; then
             cp -f /vz/templates/{$vps_os}.qcow2 $device;
