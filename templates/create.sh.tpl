@@ -197,11 +197,11 @@ fi
 if [ "$(date "+%Z")" = "PDT" ]; then
     sed s#"America/New_York"#"America/Los_Angeles"#g -i {$vzid}.xml;
 fi
-if [ "$(echo "{$vps_os}"|cut -c1-7)" = "windows" ]; then
-    sed -e s#"</features>"#"  <hyperv>\n      <relaxed state='on'/>\n      <vapic state='on'/>\n      <spinlocks state='on' retries='8191'/>\n    </hyperv>\n  </features>"#g -i {$vzid}.xml;
-    sed -e s#"<clock offset='timezone' timezone='\([^']*\)'/>"#"<clock offset='timezone' timezone='\1'>\n    <timer name='hypervclock' present='yes'/>\n  </clock>"#g -i {$vzid}.xml;
-fi;
 if [ -e /etc/lsb-release ]; then
+	if [ "$(echo "{$vps_os}"|cut -c1-7)" = "windows" ]; then
+	    sed -e s#"</features>"#"  <hyperv>\n      <relaxed state='on'/>\n      <vapic state='on'/>\n      <spinlocks state='on' retries='8191'/>\n    </hyperv>\n  </features>"#g -i {$vzid}.xml;
+	    sed -e s#"<clock offset='timezone' timezone='\([^']*\)'/>"#"<clock offset='timezone' timezone='\1'>\n    <timer name='hypervclock' present='yes'/>\n  </clock>"#g -i {$vzid}.xml;
+	fi;
     . /etc/lsb-release;
     if [ $(echo $DISTRIB_RELEASE|cut -d\. -f1) -ge 18 ]; then
         sed s#"\(<controller type='scsi' index='0'.*\)>"#"\1 model='virtio-scsi'>\n      <driver queues='$vcpu'/>"#g -i  {$vzid}.xml;
