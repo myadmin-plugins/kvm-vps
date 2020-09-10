@@ -222,7 +222,10 @@ else
 	systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
 fi
 iprogress 15 &
+<<<<<<< HEAD
 echo "Custid is {$custid}";
+=======
+>>>>>>> 01dad4f4673f870e4f4bb460b011a812e6a384f5
 {if $custid == 565600}
 if [ ! -e /vz/templates/template.281311.qcow2 ]; then
   wget -O /vz/templates/template.281311.qcow2 http://kvmtemplates.is.cc/cl/template.281311.qcow2
@@ -250,11 +253,15 @@ if [ "$pool" = "zfs" ]; then
 			iprogress 70 &
 			part=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|tail -n 1)
 			backuppart=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|head -n 1)
+<<<<<<< HEAD
 {if $vps_os != "template.281311"}            
 			virt-resize --expand $part /vz/templates/{$vps_os}.qcow2 $device || virt-resize --expand $backuppart /vz/templates/{$vps_os}.qcow2 $device ;
 {else}
 			cp -fv /vz/templates/{$vps_os}.qcow2 $device;
 {/if}
+=======
+			virt-resize --expand $part /vz/templates/{$vps_os}.qcow2 $device || virt-resize --expand $backuppart /vz/templates/{$vps_os}.qcow2 $device ;
+>>>>>>> 01dad4f4673f870e4f4bb460b011a812e6a384f5
 			iprogress 90 &
 		fi;
 		virsh detach-disk {$vzid} vda --persistent;
