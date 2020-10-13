@@ -11,13 +11,15 @@ virsh dumpxml {$param|escapeshellarg} > vps.xml;
 sed s#"{$vps_vzid}"#{$param|escapeshellarg}#g -i vps.xml;
 virsh define vps.xml;
 rm -fv vps.xml;
-for i in $(find /etc -name dhcpd.vps -type f) $(find $PWD -name "vps.*"); do
-  sed s#"{$vps_vzid}"#{$param|escapeshellarg}#g -i $i;
+for i in /etc/dhcpd.vps /etc/dhcp/dhcpd.vps /root/cpaneldirect/vps.ipmap /root/cpaneldirect/vps.mainips /root/cpaneldirect/vps.slicemap /root/cpaneldirect/vps.vncmap; do
+  if [ -e $i ]; then
+	sed s#"{$vps_vzid}"#{$param|escapeshellarg}#g -i $i;
+  fi;
 done;
 if [ -e /etc/apt ]; then
-    systemctl restart isc-dhcp-server 2>/dev/null || service isc-dhcp-server restart 2>/dev/null || /etc/init.d/isc-dhcp-server restart 2>/dev/null;
+	systemctl restart isc-dhcp-server 2>/dev/null || service isc-dhcp-server restart 2>/dev/null || /etc/init.d/isc-dhcp-server restart 2>/dev/null;
 else
-    systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
+	systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
 fi;
 rm -vf /etc/xinetd.d/{$vps_vzid} /etc/xinetd.d/{$vps_vzid}-spice;
 virsh start {$param|escapeshellarg};
