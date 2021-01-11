@@ -76,6 +76,7 @@ class Plugin
 		$settings->add_text_setting(self::$module, _('Slice Costs'), 'vps_slice_cloud_kvm_w_cost', _('Cloud KVM Windows VPS Cost Per Slice'), _('Cloud KVM Windows VPS will cost this much for 1 slice.'), $settings->get_setting('VPS_SLICE_CLOUD_KVM_W_COST'));
 		$settings->setTarget('module');
 		$settings->add_select_master(_(self::$module), _('Default Servers'), self::$module, 'new_vps_kvm_linux_server', _('KVMv2 Linux NJ Server'), NEW_VPS_KVM_LINUX_SERVER, 14, 1);
+		$settings->add_select_master(_(self::$module), _('Default Servers'), self::$module, 'new_vps_kvm_storage_server', _('KVMv2 Storage NJ Server'), NEW_VPS_KVM_STORAGE_SERVER, 16, 1);
 		$settings->add_select_master(_(self::$module), _('Default Servers'), self::$module, 'new_vps_la_kvm_win_server', _('KVMv2 LA Windows Server'), NEW_VPS_LA_KVM_WIN_SERVER, 15, 2);
 		$settings->add_select_master(_(self::$module), _('Default Servers'), self::$module, 'new_vps_la_kvm_linux_server', _('KVMv2 LA Linux Server'), NEW_VPS_LA_KVM_LINUX_SERVER, 14, 2);
 		$settings->add_select_master(_(self::$module), _('Default Servers'), self::$module, 'new_vps_ny_kvm_win_server', _('KVM NY4 Windows Server'), NEW_VPS_NY_KVM_WIN_SERVER, 1, 3);
