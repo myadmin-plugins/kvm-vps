@@ -243,7 +243,7 @@ fi
 {/if}
 # KVMv2 Install
 if [ "$pool" = "zfs" ]; then
-	if [ -e "/vz/templates/{$vps_os}.qcow2" || "{$vps_os}" = "empty" ]; then
+	if [ -e "/vz/templates/{$vps_os}.qcow2" ] || [ "{$vps_os}" = "empty" ]; then
 		echo "Copy {$vps_os}.qcow2 Image"
 		if [ "$size" = "all" ]; then
 			size=$(echo "$(zfs list vz -o available -H -p)  / (1024 * 1024)"|bc)
