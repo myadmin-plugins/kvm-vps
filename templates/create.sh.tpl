@@ -4,8 +4,32 @@
 {assign var=hd value=$hd + $settings.additional_hd}
 {assign var=hd value=$hd * 1024}
 {assign var=vcpu value=$vps_slices}
-export PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/root/bin";
-function iprogress() { curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps2.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1; }
+function iprogress() {
+	curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps2.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1;
+}
+
+function setupDhcpd() {
+	vzid="$1"
+	ip="$2"
+	mac="$3"
+    if [ -e /etc/dhcp/dhcpd.vps ]; then
+    	DHCPVPS=/etc/dhcp/dhcpd.vps
+    else
+    	DHCPVPS=/etc/dhcpd.vps
+    fi
+    if [ -e /etc/apt ]; then
+        DHCPSERVICE=isc-dhcp-server
+    else
+        DHCPSERVICE=dhcpd
+    fi
+    /bin/cp -f $DHCPVPS $DHCPVPS.backup;
+    grep -v -e "host {$vzid} " -e "fixed-address $ip;" $DHCPVPS.backup > $DHCPVPS
+    echo "host {$vzid} { hardware ethernet $mac; fixed-address $ip; }" >> $DHCPVPS
+    rm -f $DHCPVPS.backup;
+    systemctl restart $DHCPSERVICE 2>/dev/null || service $DHCPSERVICE restart 2>/dev/null || /etc/init.d/$DHCPSERVICE restart 2>/dev/null
+
+}
+
 function install_gz_image() {
 	source="$1";
 	device="$2";
@@ -43,6 +67,7 @@ function install_gz_image() {
 		sleep 10s
 	done
 }
+
 function install_image() {
 	source="$1";
 	device="$2";
@@ -69,6 +94,8 @@ function install_image() {
 	done;
 	rm -f dd.progress;
 }
+
+export PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/root/bin";
 IFS="
 "
 softraid=""
@@ -92,11 +119,6 @@ if [ "$(kpartx 2>&1 |grep sync)" = "" ]; then
 	kpartxopts=""
 else
 	kpartxopts="-s"
-fi
-if [ -e /etc/dhcp/dhcpd.vps ]; then
-	DHCPVPS=/etc/dhcp/dhcpd.vps
-else
-	DHCPVPS=/etc/dhcpd.vps
 fi
 if [ "$(echo "$ip" |grep ",")" != "" ]; then
 	extraips="$(echo "$ip"|cut -d, -f2-|tr , " ")"
@@ -212,15 +234,7 @@ fi;
 # /usr/bin/virsh setmem {$vzid} $memory;
 # /usr/bin/virsh setvcpus {$vzid} $vcpu;
 mac="$(/usr/bin/virsh dumpxml {$vzid} |grep 'mac address' | cut -d\' -f2)";
-/bin/cp -f $DHCPVPS $DHCPVPS.backup;
-grep -v -e "host {$vzid} " -e "fixed-address $ip;" $DHCPVPS.backup > $DHCPVPS
-echo "host {$vzid} { hardware ethernet $mac; fixed-address $ip; }" >> $DHCPVPS
-rm -f $DHCPVPS.backup;
-if [ -e /etc/apt ]; then
-	systemctl restart isc-dhcp-server 2>/dev/null || service isc-dhcp-server restart 2>/dev/null || /etc/init.d/isc-dhcp-server restart 2>/dev/null
-else
-	systemctl restart dhcpd 2>/dev/null || service dhcpd restart 2>/dev/null || /etc/init.d/dhcpd restart 2>/dev/null;
-fi
+setupDhcpd "$vzid" "$ip" "$mac"
 iprogress 15 &
 echo "Custid is {$custid}";
 {if $custid == 565600}
@@ -229,8 +243,9 @@ if [ ! -e /vz/templates/template.281311.qcow2 ]; then
 fi
 {assign var=vps_os value="template.281311"}
 {/if}
+# KVMv2 Install
 if [ "$pool" = "zfs" ]; then
-	if [ -e "/vz/templates/{$vps_os}.qcow2" ]; then
+	if [ -e "/vz/templates/{$vps_os}.qcow2" || "{$vps_os}" = "empty" ]; then
 		echo "Copy {$vps_os}.qcow2 Image"
 		if [ "$size" = "all" ]; then
 			size=$(echo "$(zfs list vz -o available -H -p)  / (1024 * 1024)"|bc)
@@ -248,12 +263,14 @@ if [ "$pool" = "zfs" ]; then
 			iprogress 40 &
 			qemu-img resize $device "$size"M;
 			iprogress 70 &
+{if $vps_os != "empty"}
 			part=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|tail -n 1)
 			backuppart=$(virt-list-partitions /vz/templates/{$vps_os}.qcow2|head -n 1)
-{if $vps_os != "template.281311"}            
+{if $vps_os != "template.281311"}
 			virt-resize --expand $part /vz/templates/{$vps_os}.qcow2 $device || virt-resize --expand $backuppart /vz/templates/{$vps_os}.qcow2 $device ;
 {else}
 			cp -fv /vz/templates/{$vps_os}.qcow2 $device;
+{/if}
 {/if}
 			iprogress 90 &
 		fi;
@@ -266,6 +283,7 @@ if [ "$pool" = "zfs" ]; then
 		virt-customize -d {$vzid} --root-password password:{$rootpass} --hostname "{$vzid}"
 		adjust_partitions=0
 	fi
+# Image from URL
 elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cut -c1-8)" = "https://" ] || [ "$(echo {$vps_os} | cut -c1-6)" = "ftp://" ]; then
 	adjust_partitions=0
 	echo "Downloading {$vps_os} Image"
@@ -280,6 +298,10 @@ elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cu
 		virsh vol-delete --pool vz image_storage
 		rmdir /image_storage
 	fi
+# KVMv1 Install empty image
+elif [ "{$vps_os}" != "empty" ]; then
+	adjust_partitions=0
+# KVMv1 Install
 else
 	found=0;
 	for source in "/vz/templates/{$vps_os}.img.gz" "/templates/{$vps_os}.img.gz" "/{$vps_os}.img.gz"; do
