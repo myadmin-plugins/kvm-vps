@@ -1,8 +1,6 @@
 {assign var=base value="/root/cpaneldirect"}
 {assign var=ram value=$vps_slices * $settings.slice_ram * 1024}
-{assign var=hd value=$settings.slice_hd * $vps_slices}
-{assign var=hd value=$hd + $settings.additional_hd}
-{assign var=hd value=$hd * 1024}
+{assign var=hd value=(($settings.slice_hd * $vps_slices) + $settings.additional_hd) * 1024}
 {assign var=vcpu value=$vps_slices}
 function iprogress() {
 	curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps2.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1;
