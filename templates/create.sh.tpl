@@ -297,7 +297,7 @@ elif [ "$(echo {$vps_os} | cut -c1-7)" = "http://" ] || [ "$(echo {$vps_os} | cu
 		rmdir /image_storage
 	fi
 # KVMv1 Install empty image
-elif [ "{$vps_os}" != "empty" ]; then
+elif [ "{$vps_os}" = "empty" ]; then
 	adjust_partitions=0
 # KVMv1 Install
 else
