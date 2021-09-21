@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar setup-vnc {$vps_vzid|escapeshellarg} {$param|escapeshellarg}
+/root/cpaneldirect/cli/provirted.phar setup-vnc {$vps_vzid|escapeshellarg} {$param|escapeshellarg};

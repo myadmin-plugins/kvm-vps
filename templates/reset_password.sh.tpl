@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar reset-password {$vps_vzid|escapeshellarg}
+/root/cpaneldirect/cli/provirted.phar reset-password {$vps_vzid|escapeshellarg};

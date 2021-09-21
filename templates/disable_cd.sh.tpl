@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar disable-cd {$vps_vzid|escapeshellarg}
+/root/cpaneldirect/cli/provirted.phar disable-cd {$vps_vzid|escapeshellarg};
