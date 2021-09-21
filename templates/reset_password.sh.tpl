@@ -1,1 +1,1 @@
-/root/cpaneldirect/vps_kvm_setup_password_clear.sh {$vps_vzid};
+/root/cpaneldirect/cli/provirted.phar reset-password {$vps_vzid|escapeshellarg}

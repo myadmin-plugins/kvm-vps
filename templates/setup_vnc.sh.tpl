@@ -1,3 +1,1 @@
-{if $vps_vzid != "0"}
-bash /root/cpaneldirect/vps_kvm_setup_vnc.sh {$vps_vzid} {$param|escapeshellarg};
-{/if}
+/root/cpaneldirect/cli/provirted.phar setup-vnc {$vps_vzid|escapeshellarg} {$param|escapeshellarg}
