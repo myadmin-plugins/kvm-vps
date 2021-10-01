@@ -102,7 +102,6 @@ class Plugin
 		if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS'), get_service_define('KVMV2'), get_service_define('KVMV2_WINDOWS'), get_service_define('KVMV2_STORAGE')])) {
 			$serviceInfo = $event->getSubject();
 			$settings = get_module_settings(self::$module);
-			myadmin_log(self::$module, 'info', self::$name.' Queue '.ucwords(str_replace('_', ' ', $serviceInfo['action'])).' for VPS '.$serviceInfo['vps_hostname'].'(#'.$serviceInfo['vps_id'].'/'.$serviceInfo['vps_vzid'].')', __LINE__, __FILE__, self::$module, $serviceInfo[$settings['PREFIX'].'_id']);
 			$server_info = $serviceInfo['server_info'];
 			if (!file_exists(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl')) {
 				myadmin_log(self::$module, 'error', 'Call '.$serviceInfo['action'].' for VPS '.$serviceInfo['vps_hostname'].'(#'.$serviceInfo['vps_id'].'/'.$serviceInfo['vps_vzid'].') Does not Exist for '.self::$name, __LINE__, __FILE__, self::$module, $serviceInfo[$settings['PREFIX'].'_id']);
@@ -110,7 +109,9 @@ class Plugin
 				$smarty = new \TFSmarty();
 				$smarty->assign($serviceInfo);
 				//$smarty->assign('vps_vzid', isset($vps['module']) && $vps['module'] == 'quickservers' ? 'qs'.$vps['vps_vzid'] : (is_numeric($vps['vps_vzid']) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$vps['vps_vzid'] : 'linux'.$vps['vps_vzid']) : $vps['vps_vzid']));
-				$event['output'] = $event['output'].$smarty->fetch(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl');
+				$output = $smarty->fetch(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl');
+				myadmin_log(self::$module, 'info', self::$name.' Queue '.ucwords(str_replace('_', ' ', $serviceInfo['action'])).' for '.strtoupper($settings['PREFIX']).' '.$serviceInfo['vps_hostname'].'(#'.$serviceInfo['vps_id'].'/'.$serviceInfo['vps_vzid'].'): '.$output, __LINE__, __FILE__, self::$module, $serviceInfo['vps_id']);
+				$event['output'] = $event['output'].$output;
 			}
 			$event->stopPropagation();
 		}
