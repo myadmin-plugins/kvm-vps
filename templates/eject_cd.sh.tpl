@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar eject-cd {$vps_vzid|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar cd eject {$vps_vzid|escapeshellarg};
