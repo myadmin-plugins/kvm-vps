@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar cd insert {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar cd --virt=kvm insert {$vps_vzid|escapeshellarg} {$param|escapeshellarg};

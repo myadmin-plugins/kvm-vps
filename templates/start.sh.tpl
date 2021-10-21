@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar start {$vps_vzid|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar start --virt=kvm {$vps_vzid|escapeshellarg};

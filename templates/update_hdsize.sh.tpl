@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar update --hd={($settings.slice_hd * $vps_slices) + $settings.additional_hd} {$vps_vzid};
+/root/cpaneldirect/cli/provirted.phar update --virt=kvm --hd={($settings.slice_hd * $vps_slices) + $settings.additional_hd} {$vps_vzid};
