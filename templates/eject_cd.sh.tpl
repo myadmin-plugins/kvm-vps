@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar cd --virt=kvm eject {$vps_vzid|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar cd eject --virt=kvm {$vps_vzid|escapeshellarg};

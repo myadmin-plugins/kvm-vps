@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar cd --virt=kvm enable {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar cd enable --virt=kvm {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
