@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar change-hostname --virt=kvm {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar update --hostname={$param|escapeshellarg} --virt=kvm {$vps_vzid|escapeshellarg};
