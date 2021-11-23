@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar change-timezone --virt=kvm {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
+/root/cpaneldirect/cli/provirted.phar update --virt=kvm --timezone={$param|escapeshellarg} {$vps_vzid|escapeshellarg};
