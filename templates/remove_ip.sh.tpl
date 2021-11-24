@@ -1,1 +1,1 @@
-/root/cpaneldirect/cli/provirted.phar remove-ip --virt=kvm {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
+/root/cpaneldirect/provirted.phar remove-ip --virt=kvm {$vps_vzid|escapeshellarg} {$param|escapeshellarg};
