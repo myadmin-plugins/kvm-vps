@@ -1,1 +1,1 @@
-/root/cpaneldirect/provirted.phar delete --virt=kvm --order-id={$id} {$vps_vzid|escapeshellarg};
+/root/cpaneldirect/provirted.phar delete --virt=kvm --order-id={$vps_id} {$vps_vzid|escapeshellarg};
