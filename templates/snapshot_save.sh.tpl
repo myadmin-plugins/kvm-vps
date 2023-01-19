@@ -1,0 +1,1 @@
+/root/cpaneldirect/provirted.phar snapshot save {$vps_vzid|escapeshellarg};

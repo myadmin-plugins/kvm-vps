@@ -1,0 +1,1 @@
+/root/cpaneldirect/provirted.phar snapshot restore {$vps_vzid|escapeshellarg} {$param1|escapeshellarg};
