@@ -1,1 +1,1 @@
-/root/cpaneldirect/provirted.phar update --virt=kvm --hd={($settings.slice_hd * $vps_slices) + $settings.additional_hd} --ram={$vps_slices * $settings.slice_ram} --cpu={$vps_slices} --cgroups={$vps_slices} {$vps_vzid};
+/root/cpaneldirect/provirted.phar update --virt=kvm --hd={($settings.slice_hd * $vps_slices) + $settings.additional_hd} --ram={$vps_slices * $settings.slice_ram} --cpu={$vps_slices} --cgroups={$vps_slices} --io-limit={$vps_slices * 100000000} --iops-limit={(100 * $vps_slices)+100} {$vps_vzid};
