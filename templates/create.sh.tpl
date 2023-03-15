@@ -11,7 +11,7 @@
   {$vzid} \
   {$hostname} \
   {if $ip == ''}none{else}{$ip}{/if} \
-  {$vps_os|escapeshellarg} \
+  {$vps_os} \
   {($settings.slice_hd * $vps_slices) + $settings.additional_hd} \
   {$vps_slices * $settings.slice_ram} \
   {$vps_slices};
