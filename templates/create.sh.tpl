@@ -6,8 +6,8 @@
   --order-id={$id} \
   --client-ip={$clientip} \
   --password={$rootpass} \
-  {if $module == 'vps'}--io-limit={$vps_slices * 100000000}{/if} \
-  {if $module == 'vps'}--iops-limit={(100 * $vps_slices) + 100}{/if} \
+  {if $module == 'vps' && $settings.iolimit != false}--io-limit={$settings.iolimit}{/if} \
+  {if $module == 'vps' && $settings.iopslimit != false}--iops-limit={$settings.iopslimit}{/if} \
   {$vzid} \
   {$hostname} \
   {if $ip == ''}none{else}{$ip}{/if} \
