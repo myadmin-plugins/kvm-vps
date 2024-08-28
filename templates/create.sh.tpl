@@ -14,4 +14,4 @@
   {$vps_os} \
   {($settings.slice_hd * $vps_slices) + $settings.additional_hd} \
   {$vps_slices * $settings.slice_ram} \
-  {$vps_slices};
+  {((($vps_slices - 2) / 2) + 1)|ceil};
