@@ -3,7 +3,7 @@
 {assign var=hd value=(($settings.slice_hd * $vps_slices) + $settings.additional_hd) * 1024}
 {assign var=vcpu value=$vps_slices}
 function iprogress() {
-	curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://mynew.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1;
+	curl --connect-timeout 60 --max-time 240 -k -d action=install_progress -d progress=$1 -d server={$id} 'https://myvps.interserver.net/vps_queue.php' < /dev/null > /dev/null 2>&1;
 }
 
 function setupDhcpd() {
@@ -103,12 +103,12 @@ export PREPATH="";
 ip="{','|implode:$ips}"
 iprogress 1 &
 if [ "{$module}" = "quickservers" ]; then
-	export url="https://mynew.interserver.net/qs_queue.php"
+	export url="https://myvps.interserver.net/qs_queue.php"
 	export size=all
 	export memory=$(echo "$(grep "^MemTotal" /proc/meminfo|awk "{ print \$2 }") / 100 * 70"|bc)
 	export vcpu="$(lscpu |grep ^CPU\(s\) | awk ' { print $2 }')"
 else
-	export url="https://mynew.interserver.net/vps_queue.php"
+	export url="https://myvps.interserver.net/vps_queue.php"
 	export size={$hd}
 	export memory={$ram}
 	export vcpu={$vcpu}
