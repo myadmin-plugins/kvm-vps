@@ -1,1 +1,1 @@
-/root/cpaneldirect/provirted.phar backup --virt=kvm {$vps_vzid|escapeshellarg} {$vps_id} {$email|escapeshellarg};
+screen -dmS backup{$vps_id} /root/cpaneldirect/provirted.phar backup --virt=kvm{if $module == 'quickservers'} --all{/if} {$vps_vzid|escapeshellarg} {$vps_id} {$email|escapeshellarg};
