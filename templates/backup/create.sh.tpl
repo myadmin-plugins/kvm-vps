@@ -402,11 +402,6 @@ if [ $error -eq 0 ]; then
 			vnc="$(virsh dumpxml {$vzid} |grep -i "graphics type='vnc'" | cut -d\' -f4)";
 		fi;
 	fi;
-	{$base}/vps_kvm_screenshot.sh "$(($vnc - 5900))" "$url?action=screenshot&name={$vzid}";
-	sleep 1s;
-	{$base}/vps_kvm_screenshot.sh "$(($vnc - 5900))" "$url?action=screenshot&name={$vzid}";
-	sleep 1s;
-	{$base}/vps_kvm_screenshot.sh "$(($vnc - 5900))" "$url?action=screenshot&name={$vzid}";
 	/admin/kvmenable blocksmtp {$vzid}
 	rm -f /tmp/_securexinetd;
 	if [ "{$module}" = "vps" ]; then
