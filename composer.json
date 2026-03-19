@@ -1,11 +1,14 @@
 {
 	"name": "detain/myadmin-kvm-vps",
 	"type": "myadmin-plugin",
-	"description": "Kvm Vps Class",
+	"description": "MyAdmin KVM VPS plugin — provides service activation, deactivation, queue processing, and settings management for KVM-based virtual private servers.",
 	"keywords": [
 		"kvm",
-		"administration",
-		"license"
+		"vps",
+		"virtualization",
+		"myadmin",
+		"plugin",
+		"administration"
 	],
 	"license": "LGPL-2.1-only",
 	"authors": [
@@ -23,18 +26,18 @@
 		"ext-soap": "*",
 		"symfony/event-dispatcher": "^5.0@stable",
 		"detain/myadmin-plugin-installer": "dev-master"
-    },
+	},
 	"require-dev": {
-		"phpunit/phpunit": "*",
-		"phpunit/phpunit-mock-objects": "*",
-		"vlucas/phpdotenv": "*",
-		"codeclimate/php-test-reporter": "dev-master",
-		"satooshi/php-coveralls": "*",
-		"codacy/coverage": "dev-master"
+		"phpunit/phpunit": "^9.6"
 	},
 	"autoload": {
 		"psr-4": {
 			"Detain\\MyAdminKvm\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Detain\\MyAdminKvm\\Tests\\": "tests/"
 		}
 	}
 }
