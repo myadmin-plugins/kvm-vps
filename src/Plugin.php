@@ -104,6 +104,18 @@ class Plugin
         if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS'), get_service_define('KVMV2'), get_service_define('KVMV2_WINDOWS'), get_service_define('KVMV2_STORAGE')])) {
             $serviceInfo = $event->getSubject();
             $settings = get_module_settings(self::$module);
+            if (in_array($serviceInfo['action'] ?? '', ['create', 'reinstall_os']) && trim((string)($serviceInfo['origrootpass'] ?? '')) === '') {
+                function_requirements('generate_password');
+                $newPass = generate_password(12);
+                $serviceInfo['origrootpass'] = $newPass;
+                $serviceInfo['rootpass'] = escapeshellarg($newPass);
+                $serviceId = $serviceInfo[$settings['PREFIX'].'_id'];
+                $custid = $serviceInfo[$settings['PREFIX'].'_custid'];
+                $GLOBALS['tf']->history->add($settings['PREFIX'], 'password', $serviceId, $newPass, $custid);
+                $db = get_module_db(self::$module);
+                $db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_rootpass='".$db->real_escape($newPass)."' where {$settings['PREFIX']}_id=".(int)$serviceId, __LINE__, __FILE__);
+                myadmin_log(self::$module, 'warning', 'Blank root password at '.self::$name.' '.$serviceInfo['action'].'; auto-generated new password', __LINE__, __FILE__, self::$module, $serviceId, true, false, $custid);
+            }
             $server_info = $serviceInfo['server_info'];
             if (!file_exists(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl')) {
                 myadmin_log(self::$module, 'error', 'Call '.$serviceInfo['action'].' for VPS '.$serviceInfo['vps_hostname'].'(#'.$serviceInfo['vps_id'].'/'.$serviceInfo['vps_vzid'].') Does not Exist for '.self::$name, __LINE__, __FILE__, self::$module, $serviceInfo[$settings['PREFIX'].'_id'], true, false, $serviceInfo[$settings['PREFIX'].'_custid']);
