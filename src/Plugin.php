@@ -57,7 +57,7 @@ class Plugin
         if (in_array($event['type'], [get_service_define('KVM_LINUX'), get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_LINUX'), get_service_define('CLOUD_KVM_WINDOWS'), get_service_define('KVMV2'), get_service_define('KVMV2_WINDOWS'), get_service_define('KVMV2_STORAGE')])) {
             $serviceClass = $event->getSubject();
             myadmin_log(self::$module, 'info', self::$name.' Deactivation', __LINE__, __FILE__, self::$module, $serviceClass->getId(), true, false, $serviceClass->getCustid());
-            $GLOBALS['tf']->history->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
+            \MyAdmin\App::history()->add(self::$module.'queue', $serviceClass->getId(), 'delete', '', $serviceClass->getCustid());
         }
     }
 
@@ -111,7 +111,7 @@ class Plugin
                 $serviceInfo['rootpass'] = escapeshellarg($newPass);
                 $serviceId = $serviceInfo[$settings['PREFIX'].'_id'];
                 $custid = $serviceInfo[$settings['PREFIX'].'_custid'];
-                $GLOBALS['tf']->history->add($settings['PREFIX'], 'password', $serviceId, $newPass, $custid);
+                \MyAdmin\App::history()->add($settings['PREFIX'], 'password', $serviceId, $newPass, $custid);
                 $db = get_module_db(self::$module);
                 $db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_rootpass='".$db->real_escape($newPass)."' where {$settings['PREFIX']}_id=".(int)$serviceId, __LINE__, __FILE__);
                 myadmin_log(self::$module, 'warning', 'Blank root password at '.self::$name.' '.$serviceInfo['action'].'; auto-generated new password', __LINE__, __FILE__, self::$module, $serviceId, true, false, $custid);
