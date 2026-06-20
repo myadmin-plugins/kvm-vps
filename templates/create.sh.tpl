@@ -11,6 +11,9 @@
 {/if}
   --order-id={$id} \
   --client-ip={$clientip} \
+{if $email != false && $email != ''}
+  --client-email={$email} \
+{/if}
   --password={$rootpass} \
 {if $sshKey != false}
    --ssh-key={$sshKey} \
