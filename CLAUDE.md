@@ -10,10 +10,8 @@ vendor/bin/phpunit                      # run all tests (phpunit.xml.dist)
 vendor/bin/phpunit tests/ -v            # verbose
 ```
 
-```bash
-composer test                           # run tests via composer script
-composer coverage                       # generate coverage text report
-```
+Note: `composer test` / `composer coverage` are **not** defined in this package —
+`composer.json` declares no `scripts` block. Use `vendor/bin/phpunit` directly, as above.
 
 ```bash
 caliber refresh && git add CLAUDE.md   # sync docs before committing
@@ -58,11 +56,22 @@ All templates are Smarty `.sh.tpl` files rendered by `TFSmarty` in `getQueue()`.
 
 **Config:** `phpunit.xml.dist` · tests in `tests/` · namespace `Detain\MyAdminKvm\Tests`
 
-**Pattern** (from `tests/PluginTest.php`):
-- Static property assertions: `Plugin::$name`, `Plugin::$module`, `Plugin::$type`
-- Hook structure: key format `module.action`, value `[Plugin::class, 'methodName']`
-- Reflection tests: `ReflectionMethod` for static/public/param type checks
-- Use `assertSame()` for exact matches, `assertStringContainsString()` for substrings
+**Pattern** (from `tests/PluginTest.php`): `PluginTest` extends
+`MyAdmin\Plugins\Testing\ServicePluginTestCase` from `detain/myadmin-plugin-installer` and is
+~40 lines. The shared harness supplies the contract assertions — metadata, hook targets, route
+and requirement resolution, and lifecycle handlers that are actually *executed*.
+
+**Do not add reflection or static-property tests here.** The previous 478-line `PluginTest.php`
+was 36 of them; they asserted `Plugin::$name`, method signatures and class structure, never
+executed a handler, and were deleted. Anything the harness already asserts does not belong in
+this repo.
+
+What this repo *does* own, because the harness deliberately cannot:
+- `handledTypes()` — the service types this plugin owns. Without it, gutting a handler body
+  deletes its gate, which makes the lifecycle assertion not-applicable instead of failed.
+- `testRegistersItsIdentityAndHooks()` — pins `$module`, `$type` and the hook registrations.
+  Every catalogue assertion is conditional on a registration *existing*, so without this,
+  emptying `getHooks()` leaves the suite byte-identical.
 
 ## Conventions
 
