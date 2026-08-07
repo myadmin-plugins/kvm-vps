@@ -17,9 +17,10 @@
 			"homepage": "https:\/\/my.interserver.net\/"
 		}
 	],
+	"minimum-stability": "dev",
+	"prefer-stable": true,
 	"config": {
 		"bin-dir": "vendor\/bin",
-		"minimum-stability": "dev",
 		"allow-plugins": {
 			"detain/myadmin-plugin-installer": true
 		}
