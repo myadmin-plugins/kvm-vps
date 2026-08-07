@@ -15,4 +15,28 @@ class PluginTest extends ServicePluginTestCase
     {
         return Plugin::class;
     }
+
+    /**
+     * Pins this plugin's identity and its hook registrations.
+     *
+     * The shared harness deliberately cannot do this. Every catalogue assertion is
+     * conditional on a registration existing, so emptying getHooks() leaves the suite
+     * byte-identical -- verified: 31 tests / 20 assertions / 11 skips either way. The
+     * same holds for $module and $type, which the harness reads but never pins to an
+     * expected value, so 'vps' -> 'kvm' silently detaches this plugin from every VPS
+     * lifecycle event while staying green.
+     *
+     * These four lines are the per-repo half of the contract. Keep them.
+     *
+     * @return void
+     */
+    public function testRegistersItsIdentityAndHooks()
+    {
+        $this->assertSame('vps', Plugin::$module, 'changing $module detaches this plugin from the vps events');
+        $this->assertSame('service', Plugin::$type, 'changing $type silently drops the service lifecycle assertions');
+        foreach (['vps.settings', 'vps.deactivate', 'vps.queue'] as $hook) {
+            $this->assertArrayHasKey($hook, Plugin::getHooks(), $hook.' is no longer registered');
+            $this->assertIsCallable(Plugin::getHooks()[$hook], $hook.' resolves to nothing callable');
+        }
+    }
 }
