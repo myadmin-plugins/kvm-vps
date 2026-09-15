@@ -126,6 +126,11 @@ class Plugin
                 $output = $smarty->fetch(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl');
                 myadmin_log(self::$module, 'info', 'Queue '.$server_info[$settings['PREFIX'].'_name'].' '.$output, __LINE__, __FILE__, self::$module, $serviceInfo['vps_id'], true, false, $serviceInfo['vps_custid']);
                 $event['output'] = $event['output'].$output;
+                if (($serviceInfo['action'] ?? '') == 'reinstall_os') {
+                    // Reinstall command is used here set handled true
+                    // so that ReinstallOS queue doesn't call create_vps function
+                    $event['handled'] = true;
+                }
             }
             $event->stopPropagation();
         }
