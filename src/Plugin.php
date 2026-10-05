@@ -137,6 +137,20 @@ class Plugin
     }
 
     /**
+     * The value the auto-generated {PREFIX}_rootpass UPDATE writes: sealed for this
+     * VPS once core's write flag is on (MyAdmin plan_2way §5.2, §6), the plaintext
+     * otherwise or on a core tree that predates updateValue().
+     */
+    private static function rootpassValue(string $table, string $column, int $id, string $pass): string
+    {
+        $ss = 'MyAdmin\\Security\\ServiceSecrets';
+        if (class_exists($ss) && method_exists($ss, 'updateValue')) {
+            return (string)$ss::updateValue($table, $column, $id, $pass);
+        }
+        return $pass;
+    }
+
+    /**
      * @param \Symfony\Component\EventDispatcher\GenericEvent $event
      */
     public static function getQueue(GenericEvent $event)
@@ -153,7 +167,7 @@ class Plugin
                 $custid = $serviceInfo[$settings['PREFIX'].'_custid'];
                 \MyAdmin\App::history()->add($settings['PREFIX'], 'password', $serviceId, $newPass, $custid);
                 $db = get_module_db(self::$module);
-                $db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_rootpass='".$db->real_escape($newPass)."' where {$settings['PREFIX']}_id=".(int)$serviceId, __LINE__, __FILE__);
+                $db->query("update {$settings['TABLE']} set {$settings['PREFIX']}_rootpass='".$db->real_escape(self::rootpassValue($settings['TABLE'], $settings['PREFIX'].'_rootpass', (int)$serviceId, $newPass))."' where {$settings['PREFIX']}_id=".(int)$serviceId, __LINE__, __FILE__);
                 myadmin_log(self::$module, 'warning', 'Blank root password at '.self::$name.' '.$serviceInfo['action'].'; auto-generated new password', __LINE__, __FILE__, self::$module, $serviceId, true, false, $custid);
             }
             $server_info = $serviceInfo['server_info'];
@@ -161,7 +175,9 @@ class Plugin
                 myadmin_log(self::$module, 'error', 'Call '.$serviceInfo['action'].' for VPS '.$serviceInfo['vps_hostname'].'(#'.$serviceInfo['vps_id'].'/'.$serviceInfo['vps_vzid'].') Does not Exist for '.self::$name, __LINE__, __FILE__, self::$module, $serviceInfo[$settings['PREFIX'].'_id'], true, false, $serviceInfo[$settings['PREFIX'].'_custid']);
             } else {
                 $smarty = new \TFSmarty();
-                $smarty->assign($serviceInfo);
+                // no template uses the stored *_rootpass columns (they render rootpass/origrootpass); keeping them out
+                // means a SecretBox envelope never reaches Smarty (MyAdmin plan_2way §5.2, §6)
+                $smarty->assign(array_diff_key($serviceInfo, ['vps_rootpass' => true, 'qs_rootpass' => true]));
                 //$smarty->assign('vps_vzid', isset($vps['module']) && $vps['module'] == 'quickservers' ? 'qs'.$vps['vps_vzid'] : (is_numeric($vps['vps_vzid']) ? (in_array($event['type'], [get_service_define('KVM_WINDOWS'), get_service_define('CLOUD_KVM_WINDOWS')]) ? 'windows'.$vps['vps_vzid'] : 'linux'.$vps['vps_vzid']) : $vps['vps_vzid']));
                 $output = $smarty->fetch(__DIR__.'/../templates/'.$serviceInfo['action'].'.sh.tpl');
                 myadmin_log(self::$module, 'info', 'Queue '.$server_info[$settings['PREFIX'].'_name'].' '.self::redactQueueOutput($output, $serviceInfo), __LINE__, __FILE__, self::$module, $serviceInfo['vps_id'], true, false, $serviceInfo['vps_custid']);
