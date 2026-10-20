@@ -1,2 +1,34 @@
 /root/cpaneldirect/provirted.phar stop --virt=kvm -f {$vps_vzid|escapeshellarg};
-/root/cpaneldirect/provirted.phar reinstall --virt=kvm {$vps_vzid|escapeshellarg} {$vps_os|escapeshellarg}{if $rootpass != ''} {$rootpass}{/if};
+/root/cpaneldirect/provirted.phar reinstall --virt=kvm \
+{if $module == 'quickservers'}
+    --all \
+{/if}
+{foreach item=$extraIp from=$extraips} --add-ip={$extraIp}{/foreach} \
+{if $ipv6_ip != false}
+    --ipv6-ip={$ipv6_ip} \
+{/if}
+{if $ipv6_range != false}
+    --ipv6-range={$ipv6_range} \
+{/if}
+--order-id={$id} \
+--client-ip={$clientip} \
+{if $email != false && $email != ''}
+    --client-email={$email} \
+{/if}
+--password={$rootpass} \
+{if $sshKey != false}
+    --ssh-key={$sshKey} \
+{/if}
+{if $module == 'vps' && $settings.iolimit != false}
+    --io-limit={$settings.iolimit} \
+{/if}
+{if $module == 'vps' && $settings.iopslimit != false}
+    --iops-limit={$settings.iopslimit} \
+{/if}
+--hostname={$hostname} \
+--ip={if $ip == ''}none{else}{$ip}{/if} \
+--hd={($settings.slice_hd * $vps_slices) + $settings.additional_hd} \
+--ram={$vps_slices * $settings.slice_ram} \
+--cpu={((($vps_slices - 2) / 2) + 1)|ceil} \
+{$vzid} \
+{$vps_os};
