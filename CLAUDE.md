@@ -40,7 +40,7 @@ make php-cs-fixer                       # run code style fixer
 
 All templates are Smarty `.sh.tpl` files rendered by `TFSmarty` in `getQueue()`.
 
-**Primary** (`templates/`): `create.sh.tpl` · `delete.sh.tpl` · `destroy.sh.tpl` · `start.sh.tpl` · `stop.sh.tpl` · `restart.sh.tpl` · `reset.sh.tpl` · `enable.sh.tpl` · `add_ip.sh.tpl` · `remove_ip.sh.tpl` · `change_hostname.sh.tpl` · `change_timezone.sh.tpl` · `reset_password.sh.tpl` · `reinstall_os.sh.tpl` · `setup_vnc.sh.tpl` · `backup.sh.tpl` · `restore.sh.tpl` · `snapshot_save.sh.tpl` · `snapshot_restore.sh.tpl` · `set_slices.sh.tpl` · `update_hdsize.sh.tpl` · `block_smtp.sh.tpl` · `insert_cd.sh.tpl` · `eject_cd.sh.tpl` · `enable_cd.sh.tpl` · `disable_cd.sh.tpl`
+**Primary** (`templates/`): `create.sh.tpl` · `delete.sh.tpl` · `destroy.sh.tpl` · `start.sh.tpl` · `stop.sh.tpl` · `restart.sh.tpl` · `reset.sh.tpl` · `enable.sh.tpl` · `add_ip.sh.tpl` · `add_ipv6.sh.tpl` · `remove_ip.sh.tpl` · `change_hostname.sh.tpl` · `change_timezone.sh.tpl` · `reset_password.sh.tpl` · `reinstall_os.sh.tpl` · `setup_vnc.sh.tpl` · `backup.sh.tpl` · `restore.sh.tpl` · `snapshot_save.sh.tpl` · `snapshot_restore.sh.tpl` · `set_slices.sh.tpl` · `update_hdsize.sh.tpl` · `block_smtp.sh.tpl` · `insert_cd.sh.tpl` · `eject_cd.sh.tpl` · `enable_cd.sh.tpl` · `disable_cd.sh.tpl`
 
 **Backup node** (`templates/backup/`): mirrors primary with backup-specific variants — `backup.sh.tpl` · `create.sh.tpl` · `delete.sh.tpl` · `restore.sh.tpl` · `set_slices.sh.tpl` · `setup_vnc.sh.tpl` etc.
 
